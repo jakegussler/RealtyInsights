@@ -13,10 +13,11 @@ fi
 
 cd ${PROJECT_PATH}
 
-# Create a virtual environment named 'myenv'
+# Create a virtual environment and activate
 python -m venv venv
 
 source venv/bin/activate
 
 # Windows
 #source myenv/Scripts/activate
+

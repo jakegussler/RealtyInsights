@@ -11,39 +11,21 @@ else
     exit 1
 fi
 
-#Set environment variables
-DB_NAME=${DB_NAME}
-DB_HOST=${DB_HOST}
-DB_USER=${DB_USER}
-DB_PASSWORD=${DB_PASSWORD}
-DB_SUPERUSER=${DB_SUPERUSER}
-DB_SUPERUSER_PASSWORD=${DB_SUPERUSER_PASSWORD}
 
-export PGPASSWORD="$DB_SUPERUSER_PASSWORD"
+export PGPASSWORD="${DB_SUPERUSER_PASSWORD}"
 
-#echo "$DB_NAME"
-#echo "$DB_USER"
-#echo "$DB_PASSWORD"
-#echo "$POSTGRES_SUPERUSER_PASSWORD"
+
+echo "Creating database ${DB_NAME}"
 
 #Connect to postgres as super user and run commands
 psql -U $DB_SUPERUSER -h $DB_HOST <<EOF
 
---Drop database if exists
+--Drop and create database
 DROP DATABASE IF EXISTS $DB_NAME;
-
---Create database
 CREATE DATABASE $DB_NAME;
 
---Drop user if exists
-DROP USER IF EXISTS $DB_USER;
 
---Create user
-CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';
-
---Grant privileges to user
-GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;
 EOF
 
 unset PGPASSWORD
-echo "database and user setup complete"
+echo "database ${DB_NAME} created"
