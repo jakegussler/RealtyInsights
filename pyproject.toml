@@ -11,6 +11,8 @@ dependencies = [
     "python-dotenv",  
     "pandas",     
     "dbt-postgres",
+    "requests",
+    "sqlalchemy"
 ]
 
 [project.optional-dependencies]
