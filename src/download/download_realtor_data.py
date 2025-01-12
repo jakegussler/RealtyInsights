@@ -33,12 +33,9 @@ def get_csv(url: str, csv_output_name: str, folderpath: str) -> None:
     logger.info(f"Download start time: {timestamps['start_time']}")
 
     try:
-
         create_output_dir(folderpath=folderpath)
-
         response = get_response(url=url)
         if(response):
-            
             timestamps["download_end_time"] = datetime.datetime.now()
             logger.info(f"Download end time: {timestamps["download_end_time"]}")
             

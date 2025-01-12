@@ -1,6 +1,7 @@
 import requests
 from utils.logger_utils import setup_logging
 import time
+import pandas as pd
 
 logger = setup_logging()
 
@@ -35,3 +36,50 @@ def get_response(url, params=None, max_retries=10, retry_delay=5, timeout=30):
             else:
                 print("Max retries reached. Returning None")
                 return None
+            
+def get_response_as_json(url: str, params: dict):
+    """
+    Retrieve data from an API as JSON
+    year (str): The year to retrieve data for
+    params (dict): dictionary of parameters to pass to the API
+    """
+    try:
+        response = get_response(url, params)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error getting response for {url}: {e}")
+        return None
+
+def convert_json_to_df(data: list) -> None:
+    """
+    Process the data from the census API
+    Parameters:
+    data (list): The data to process
+    """
+    try:
+        # Convert to dataframe
+        logger.info(f"Converting response to DataFrame")
+        df = pd.DataFrame(data[1:],columns=data[0])
+        return df
+    except Exception as e: 
+        logger.error(f"Error converting to Dataframe {e}")
+
+
+def get_response_as_df(url, params: dict) -> pd.DataFrame:
+    """
+    Retrieves data from an API and converts it to a DataFrame
+    """
+    logger.info(f"Downloading Data for {url}")
+    data = get_response_as_json(url, params=params)
+    if data:
+        logger.info(f"Downloaded data for {url}")
+        #Process the data as a DataFrame
+        df = convert_json_to_df(data)
+
+        logger.info(f"Processed data for {url}")
+        if df is not None:
+            return df
+        else:
+            return None
+
