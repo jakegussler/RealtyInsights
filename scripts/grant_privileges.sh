@@ -18,7 +18,8 @@ psql -U $DB_SUPERUSER -h $DB_HOST -d ${DB_NAME} <<EOF
 
 --Grant privileges to ingest user
 GRANT ALL PRIVILEGES ON SCHEMA realty_raw TO ${DB_INGEST_USER};
+GRANT ALL PRIVILEGES ON SCHEMA census_raw TO ${DB_INGEST_USER};
 
 
-GRANT ALL PRIVILEGES ON SCHEMA realty_raw, realty_silver, realty_gold TO ${DB_DBT_USER};
+GRANT ALL PRIVILEGES ON SCHEMA census_raw, census_silver, realty_raw, realty_silver, realty_gold TO ${DB_DBT_USER};
 
