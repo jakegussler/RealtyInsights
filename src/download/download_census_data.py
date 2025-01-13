@@ -11,6 +11,7 @@ logger = setup_logging()
 load_dotenv()
 
 BASE_URL_TEMPLATE='https://api.census.gov/data/{year}/acs/acs5/subject'
+FILE_NAME_TEMPLATE='census_income_{year}.csv'
 DEFAULT_COLUMNS=['NAME', 'GEO_ID']
 INCOME_COLUMNS = {
     '2016':'S1903_C02_001E,S1903_C02_001M,S1903_C02_001EA,S1903_C02_001MA',
@@ -97,7 +98,7 @@ def get_census_as_df(year) -> pd.DataFrame:
     else:
         return None
 
-def download_census_data(filepath:str, first_year: int, last_year: int) -> None:
+def download_census_data(folderpath:str, first_year: int, last_year: int) -> None:
     """
     Download census data for a range of years and save to a Parquet file
     Parameters:
@@ -106,7 +107,7 @@ def download_census_data(filepath:str, first_year: int, last_year: int) -> None:
     last_year (int): The last year to download data for
     """
 
-    delete_csv(filepath)
+    
 
     # Create a list of years to download
     years = []
@@ -114,6 +115,11 @@ def download_census_data(filepath:str, first_year: int, last_year: int) -> None:
         years.append(str(year))
     
     for year in years:
+        # Create the file path
+        filename = FILE_NAME_TEMPLATE.format(year=year)
+        filepath = os.path.join(folderpath, filename)
+        # Delete the file if it exists
+        delete_csv(filepath)
         try:
             # Get data from the Census API
             df = get_census_as_df(year)
@@ -138,11 +144,11 @@ def download_census_data(filepath:str, first_year: int, last_year: int) -> None:
 def main() -> None:
 
     folderpath = os.path.join(os.getenv("PROJECT_PATH"), 'data/raw/census')
-    filepath = os.path.join(folderpath, 'census_income_by_zip.csv')
+    
 
     create_output_dir(folderpath)
 
-    download_census_data(filepath=filepath, first_year=2016, last_year=2023)
+    download_census_data(folderpath=folderpath, first_year=2016, last_year=2023)
 
 
 if __name__ == "__main__":
