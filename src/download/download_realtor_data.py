@@ -20,7 +20,7 @@ timestamps = {
     
 }
 
-def get_csv(url: str, csv_output_name: str, folderpath: str) -> None:
+def get_csv(url: str, csv_output_name: str, folder_path: str) -> None:
 
     """
     Make a request to download a CSV file
@@ -33,13 +33,13 @@ def get_csv(url: str, csv_output_name: str, folderpath: str) -> None:
     logger.info(f"Download start time: {timestamps['start_time']}")
 
     try:
-        create_output_dir(folderpath=folderpath)
+        create_output_dir(folder_path=folder_path)
         response = get_response(url=url)
         if(response):
             timestamps["download_end_time"] = datetime.datetime.now()
             logger.info(f"Download end time: {timestamps["download_end_time"]}")
             
-            filepath = f"{folderpath}/{csv_output_name}"
+            filepath = f"{folder_path}/{csv_output_name}"
 
             write_response_to_csv(response=response, filepath=filepath)
             
@@ -53,13 +53,13 @@ def get_csv(url: str, csv_output_name: str, folderpath: str) -> None:
 
 
 
-def download_all_realtor_csv_files(folderpath: str) -> None:
+def download_all_realtor_csv_files(folder_path: str) -> None:
     
     """
     Download the Realtor.com CSV files
     
     Parameters:
-    folderpath (str): The folder path to save the CSV files
+    folder_path (str): The folder path to save the CSV files
     """
 
     base_url = 'https://econdata.s3-us-west-2.amazonaws.com/Reports/Core/RDC_Inventory_Core_Metrics_'
@@ -73,14 +73,14 @@ def download_all_realtor_csv_files(folderpath: str) -> None:
         csv_output_name = "realtor_" + table.lower() + ".csv"
 
         #Get the data from the API
-        get_csv(url=url, csv_output_name=csv_output_name, folderpath=folderpath)
+        get_csv(url=url, csv_output_name=csv_output_name, folder_path=folder_path)
 
 def main() -> None:
 
-    folderpath = "/Users/jakegussler/Projects/RealtyInsights/data/raw/realtor"
+    folder_path = "/Users/jakegussler/Projects/RealtyInsights/data/raw/realtor"
 
     #Download the zillow tables
-    download_all_realtor_csv_files(folderpath)
+    download_all_realtor_csv_files(folder_path)
 
 if __name__ == "__main__":
     main()
