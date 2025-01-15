@@ -41,13 +41,33 @@ def delete_csv(filepath: str) -> None:
     else:
         logger.info(f"CSV file does not exist at {filepath}, ignoring delete request")
 
-def write_df_to_parquet(df, filepath: str) -> None:
-
+def clean_folder(folder_path: str) -> None:
+    """
+    Clean the folder by deleting any existing files
+    Parameters:
+    folder_path (str): The path to the folder to clean
+    """
     try:
-        df.to_parquet(filepath)
-        logger.info(f"Saved data to {filepath}")
+        logger.info(f"Cleaning folder {folder_path}")
+        for file in os.listdir(folder_path):
+            if file.endswith(".csv"):
+                logger.info(f"Deleting existing CSV file: {file}")
+                delete_csv(os.path.join(folder_path, file))
     except Exception as e:
-        logger.error(f"Error saving data to {filepath}: {e}")
+        logger.error(f"Error cleaning folder {folder_path}: {e}")
 
-
+def prepare_and_clean_folder(folder_path: str) -> None:
+    """
+    Prepare a folder by creating output directory
+    then deleting any existing files if output directory exists
+    Parameters:
+    folder_path (str): The path to the folder to prepare
+    """
+    try:
+        logger.info(f"Preparing folder {folder_path}")
+        logger.info(f"Creating output directory if it does not exist")
+        create_output_dir(folder_path)
+        clean_folder(folder_path)
+    except Exception as e:
+        logger.error(f"Error preparing folder {folder_path}: {e}")
 
