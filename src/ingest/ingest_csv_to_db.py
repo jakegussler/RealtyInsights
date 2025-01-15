@@ -2,21 +2,22 @@ import pandas as pd
 import os
 import datetime
 from dotenv import load_dotenv
-from utils.db_utils import get_engine
+from utils.db_utils import get_engine, delete_table, create_table
 from utils.logger_utils import setup_logging
+
 
 logger = setup_logging()
 load_dotenv()
 
 env = os.getenv("ENV")
 
-def ingest_csv_to_db(filepath: str, schema: str, table_name: str) -> None:
+def ingest_csv_to_db(file_path: str, schema: str, table_name: str) -> None:
 
     """
     Ingest the data from a CSV file into a PostgreSQL database
 
     Parameters:
-    filepath (str): The path to the CSV file
+    file_path (str): The path to the CSV file
     schema (str): The schema to ingest the data into
     table_name (str): The name of the table_name to ingest the data into
 
@@ -30,7 +31,7 @@ def ingest_csv_to_db(filepath: str, schema: str, table_name: str) -> None:
 
     ingest_start_time = datetime.datetime.now()
  
-    for chunk_number, chunk in enumerate(pd.read_csv(filepath, chunksize=chunksize)):
+    for chunk_number, chunk in enumerate(pd.read_csv(file_path, chunksize=chunksize)):
         for attempt in range(max_retries):  
             try:
                 ingest_df_to_db(df=chunk,schema=schema, table_name=table_name, engine=engine)
@@ -66,24 +67,41 @@ def ingest_df_to_db(df, schema: str, table_name: str, engine) -> None:
         logger.error(f"An error occured while ingesting data into {table_name}: {str(e)}")
         raise
 
-def ingest_all_csv_files_in_folder(folderpath: str, schema: str) -> None:
+def ingest_all_csv_files_in_folder(folder_path: str, schema: str) -> None:
     """
     Ingest the Zillow CSV files into the PostgreSQL database
     Parameters:
-    folderpath (str): The path to the folder containing the Zillow CSV files
+    folder_path (str): The path to the folder containing the Zillow CSV files
     schema (str): The schema to ingest to in the database
     """
 
-    for file in os.listdir(folderpath):
+    for file in os.listdir(folder_path):
         if file.endswith(".csv"):
-            filepath = f"{folderpath}/{file}"
+            file_path = f"{folder_path}/{file}"
             table_name = file.split('.')[0].lower()
-            ingest_csv_to_db(filepath=filepath, schema=schema, table_name=table_name)
+            ingest_csv_to_db(file_path=file_path, schema=schema, table_name=table_name)
 
 
+def ingest_census_data() -> None:
+    """
+    Ingest the processed census data into the database
+    """
 
+    #Get the file path
+    project_path = os.getenv("PROJECT_PATH")
+    folder_path = f"{project_path}/data/processed/census"
+    census_data_file_path = f"{folder_path}/census_data.csv"
+
+    #Prepare the database
+    delete_table(schema="census_raw", table_name="census_data")
+    create_table(df=pd.read_csv(census_data_file_path, nrows=1), schema="census_raw", table_name="census_data")
+    
+    ingest_all_csv_files_in_folder(folder_path=folder_path, schema="census_raw")
+
+
+def main():
+    ingest_census_data()
 
 if __name__ == "__main__":
+    main()
 
-    project_path = os.getenv("PROJECT_PATH")
-    ingest_all_csv_files_in_folder(folderpath=f"{project_path}/data/raw/realtor", schema="realty_raw")
