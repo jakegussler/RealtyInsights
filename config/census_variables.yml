@@ -1,0 +1,32 @@
+default_columns:
+  - name: NAME
+    description: Geographic Area Name
+  - name: GEO_ID
+    description: Geographic Identifier
+
+variables:
+  median_household_income:
+    table: S1903
+    column: C03
+    row: "001"
+    description: Median household income in the past 12 months
+    years:
+      2016:  # Override for 2016
+        column: C02
+  
+  total_population:
+    table: S0101
+    column: C01
+    row: "001"
+    description: Total population
+  
+
+suffixes:
+  - code: E
+    description: Estimate
+  - code: M
+    description: Margin of Error
+  - code: EA
+    description: Estimate Annotation
+  - code: MA
+    description: Margin of Error Annotation
