@@ -21,7 +21,7 @@ def add_year_column(df: pd.DataFrame, year: str) -> pd.DataFrame:
 def get_year_from_file_name(file_name: str) -> str:
     """Extract year from filename."""
     try:
-        return file_name.split('censusdata')[-1].split('.')[0]
+        return file_name.split('.')[0].split('_')[-1]
     except Exception as e:
         logger.error(f"Error getting year from filename {file_name}: {e}")
         return None

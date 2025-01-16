@@ -2,7 +2,7 @@ import pandas as pd
 from dotenv import load_dotenv
 import os
 from utils.logger_utils import setup_logging
-from utils.api_utils import get_response, get_response_as_df
+from utils.api_utils import get_response_as_df
 from utils.file_utils import prepare_and_clean_folder, write_df_to_csv
 from utils.census_utils import load_census_config, get_column_string
 
