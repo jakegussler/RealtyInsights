@@ -8,7 +8,7 @@ from utils.census_utils import load_census_config, create_column_mapping
 load_dotenv()
 logger = setup_logging()
 
-def add_year_column(df: pd.DataFrame, year: str) -> pd.DataFrame:
+def add_year_column(df: pd.DataFrame, year: int) -> pd.DataFrame:
     """Add year column to DataFrame."""
     try:
         logger.info("Adding year column to DataFrame")
@@ -64,7 +64,7 @@ def process_census_file(
         # Read and transform the file
         df = pd.read_csv(raw_file_path)
         df = map_columns(df, column_mapping)
-        df = add_year_column(df, get_year_from_file_name(raw_file_path))
+        df = add_year_column(df, int(get_year_from_file_name(raw_file_path)))
         df = remove_column(df, 'state')
 
         # Save the processed data
