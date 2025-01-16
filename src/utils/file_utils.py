@@ -10,36 +10,36 @@ def create_output_dir(folderpath: str) -> None:
         os.makedirs(folderpath)
         logger.info(f"Created directory: {folderpath}")
 
-def write_response_to_csv(response, filepath: str) -> None:
+def write_response_to_csv(response, file_path: str) -> None:
 
-    with open(filepath, "wb") as file:
+    with open(file_path, "wb") as file:
         for chunk in response.iter_content(chunk_size=8192):
             if chunk:
                 file.write(chunk)
 
-def write_df_to_csv(df, filepath: str, append: bool = False) -> None:
+def write_df_to_csv(df, file_path: str, append: bool = False) -> None:
     try:
         if append:
             # Append to the file, avoid writing the header if the file exists
-            df.to_csv(filepath, index=False, mode='a', header=not os.path.exists(filepath))
+            df.to_csv(file_path, index=False, mode='a', header=not os.path.exists(file_path))
         else:
             # Overwrite the file
-            df.to_csv(filepath, index=False)
-        logger.info(f"Saved data to {filepath}")
+            df.to_csv(file_path, index=False)
+        logger.info(f"Saved data to {file_path}")
     except Exception as e:
-        logger.error(f"Error saving data to {filepath}: {e}")
+        logger.error(f"Error saving data to {file_path}: {e}")
 
-def delete_csv(filepath: str) -> None:
-    logger.info(f"Checking if CSV fie exists at {filepath}")
-    if os.path.exists(filepath):
-        logger.info(f"CSV file exists, deleting {filepath}")
+def delete_csv(file_path: str) -> None:
+    logger.info(f"Checking if CSV fie exists at {file_path}")
+    if os.path.exists(file_path):
+        logger.info(f"CSV file exists, deleting {file_path}")
         try:
-            os.remove(filepath)
-            logger.info(f"Deleted {filepath}")
+            os.remove(file_path)
+            logger.info(f"Deleted {file_path}")
         except Exception as e:
-            logger.error(f"Error deleting {filepath}: {e}")
+            logger.error(f"Error deleting {file_path}: {e}")
     else:
-        logger.info(f"CSV file does not exist at {filepath}, ignoring delete request")
+        logger.info(f"CSV file does not exist at {file_path}, ignoring delete request")
 
 def clean_folder(folder_path: str) -> None:
     """
