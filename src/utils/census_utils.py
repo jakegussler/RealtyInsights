@@ -2,13 +2,6 @@ import yaml
 from typing import Dict, List, Optional
 import os
 
-SUFFIXES = {
-    'M': 'margin_of_error',
-    'EA': 'annotation',
-    'MA': 'margin_annotation',
-    'PE': 'percentage',
-}
-
 def load_census_config(config_path: str) -> dict:
     """Load the census configuration from YAML file."""
     with open(config_path, 'r') as file:
