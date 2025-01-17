@@ -2,6 +2,13 @@ import yaml
 from typing import Dict, List, Optional
 import os
 
+SUFFIXES = {
+    'M': 'margin_of_error',
+    'EA': 'annotation',
+    'MA': 'margin_annotation',
+    'PE': 'percentage',
+}
+
 def load_census_config(config_path: str) -> dict:
     """Load the census configuration from YAML file."""
     with open(config_path, 'r') as file:
@@ -20,8 +27,15 @@ def generate_variable_code(
     column = year_config.get('column', variable_config['column'])
     row = year_config.get('row', variable_config['row'])
     table = year_config.get('table', variable_config['table'])
+
+    # Dynamically create census code based on variable configuration
+    variable_code = table
+    if column is not None:
+        variable_code += f"_{column}"
+    if row is not None:
+        variable_code += f"_{row}"
     
-    return f"{table}_{column}_{row}{suffix}"
+    return f"{variable_code}{suffix}"
 
 def get_all_variable_codes(
     config: dict,
@@ -35,7 +49,8 @@ def get_all_variable_codes(
     
     # Generate codes for each variable with all suffixes
     for variable_name, variable_config in config['variables'].items():
-        for suffix in config['suffixes']:
+        table_prefix = variable_config.get('table', '')[0]
+        for suffix in config['suffixes'].get(table_prefix, {}):
             code = generate_variable_code(
                 variable_config,
                 year,
@@ -49,19 +64,13 @@ def get_column_string(config: dict, year: int) -> str:
     """Get the complete column string for the API request."""
     return ','.join(get_all_variable_codes(config, year))
 
-def get_readable_column_name(var_name: str, suffix: dict) -> str:
+def get_readable_column_name(var_name: str, suffix: dict, suffix_mappings: dict) -> str:
     """Get a human-readable column name for a variable and suffix."""
-    # Create snake_case column name from variable name and suffix
     if suffix['code'] == 'E':  # Base estimate
         return var_name
-    else:
-        suffix_type = {
-            'M': 'margin_of_error',
-            'EA': 'annotation',
-            'MA': 'margin_annotation'
-        }.get(suffix['code'], suffix['code'].lower())
-        return f"{var_name}_{suffix_type}"
-
+    
+    mapping = suffix_mappings.get(suffix['code'], suffix['code'].lower())
+    return f"{var_name}_{mapping}"
 
 def create_column_mapping(config: dict) -> Dict[str, str]:
     """
@@ -76,25 +85,24 @@ def create_column_mapping(config: dict) -> Dict[str, str]:
 
     
     for var_name, var_config in config['variables'].items():
+        # Get table prefix for variable
+        table_prefix = var_config.get('table', '')[0]
 
+        # Map year-specific variables
         if var_config.get('years') is not None:
+            # Loop through year-specific configurations
             for year, year_config in var_config['years'].items():
-                for suffix in config['suffixes']:
-                    # Create census code using year-specific or default values
-                    table = year_config.get('table', var_config['table'])
-                    column = year_config.get('column', var_config['column'])
-                    row = year_config.get('row', var_config['row'])
-                    census_code = f"{table}_{column}_{row}{suffix['code']}"
-                    
-                    readable_name = get_readable_column_name(var_name, suffix)
+                # Generate variable code for each suffix based on table prefix
+                for suffix in config['suffixes'].get(table_prefix, {}):
+                    variable_code = generate_variable_code(var_config, suffix['code'], year)
+                    readable_name = get_readable_column_name(var_name, suffix, year)
 
-                    mapping[census_code] = readable_name.lower()
-        
-        for suffix in config['suffixes']:
-            census_code = f"{var_config['table']}_{var_config['column']}_{var_config['row']}{suffix['code']}"
-            # Create snake_case column name from variable name and suffix
+                    mapping[variable_code] = readable_name.lower()
+        # Map standard variables
+        for suffix in config['suffixes'].get(table_prefix, {}):
+            variable_code = generate_variable_code(var_config, suffix['code'])
             readable_name = get_readable_column_name(var_name, suffix)
             
-            mapping[census_code] = readable_name.lower()
+            mapping[variable_code] = readable_name.lower()
     
     return mapping

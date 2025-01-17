@@ -20,13 +20,33 @@ variables:
     row: "001"
     description: Total population
   
+  median_rent:
+    table: B25031
+    row: "001"
+    description: Median gross rent
 
 suffixes:
-  - code: E
-    description: Estimate
-  - code: M
-    description: Margin of Error
-  - code: EA
-    description: Estimate Annotation
-  - code: MA
-    description: Margin of Error Annotation
+  table_prefix: S
+    - code: E
+      description: Estimate
+    - code: M
+      description: Margin of Error
+    - code: EA
+      description: Estimate Annotation
+    - code: MA
+      description: Margin of Error Annotation
+  table_prefix: B
+    - code: E
+      description: Estimate
+  table_prefix: D
+    - code: E
+      description: Estimate
+    - code: P
+      description: Percent
+
+suffix_mapping:
+  E: estimate
+  M: margin_of_error
+  EA: estimate_annotation
+  MA: margin_of_error_annotation
+  P: percent
