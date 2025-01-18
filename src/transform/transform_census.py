@@ -8,6 +8,8 @@ from utils.census_utils import load_census_config, create_column_mapping
 load_dotenv()
 logger = setup_logging()
 
+PROCESSED_FILE_NAME_TEMPLATE = 'census_{table_name}_zip.csv'
+
 def add_year_column(df: pd.DataFrame, year: int) -> pd.DataFrame:
     """Add year column to DataFrame."""
     try:
@@ -74,30 +76,39 @@ def process_census_file(
 
 def process_and_consolidate_census_files(
     raw_folder_path: str,
-    consolidated_file_path: str,
     column_mapping: dict
 ) -> None:
-    """Process all census files and consolidate into single file."""
-    processed_folder_path = os.path.dirname(consolidated_file_path)
-    prepare_and_clean_folder(processed_folder_path)
+    """Process all census files and consolidate into files based on table."""
 
     logger.info(f"Processing all files in {raw_folder_path}")
-    for file in os.listdir(raw_folder_path):
-        if file.endswith(".csv"):
-            process_census_file(
-                raw_file_path=os.path.join(raw_folder_path, file),
-                processed_file_path=consolidated_file_path,
-                column_mapping=column_mapping
-            )
+
+    # Create processed folder if it doesn't exist and delete existing files
+    prepare_and_clean_folder(raw_folder_path.replace('raw', 'processed'))
+
+    # Process each file in each census table folder
+    for folder in os.listdir(raw_folder_path):
+        # Create processed file path using table name from raw folder path being processed
+        project_path = os.getenv("PROJECT_PATH")
+        raw_subfolder_path = os.path.join(raw_folder_path, folder)
+        processed_file_path = os.path.join(
+            project_path,
+            "data/processed/census",
+            PROCESSED_FILE_NAME_TEMPLATE.format(table_name=os.path.basename(folder))
+        )
+        # Process each file in the folder
+        for file in os.listdir(os.path.join(raw_folder_path, folder)):
+            if file.endswith(".csv"):
+                process_census_file(
+                    raw_file_path=os.path.join(raw_subfolder_path, file),
+                    processed_file_path=processed_file_path,
+                    column_mapping=column_mapping
+                )
 
 def main() -> None:
     # Load paths from environment
     project_path = os.getenv("PROJECT_PATH")
     census_raw_folder = os.path.join(project_path, 'data/raw/census')
-    consolidated_file_path = os.path.join(
-        project_path,
-        'data/processed/census/census_data.csv'
-    )
+
     config_path = os.path.join(project_path, 'config/census_variables.yml')
 
     # Load configuration and create column mapping
@@ -108,9 +119,8 @@ def main() -> None:
     logger.info(f"Processing census files in {census_raw_folder}")
     process_and_consolidate_census_files(
         raw_folder_path=census_raw_folder,
-        consolidated_file_path=consolidated_file_path,
         column_mapping=column_mapping
     )
-
+    print("Census data processing complete.")
 if __name__ == "__main__":
     main()

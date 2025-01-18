@@ -15,8 +15,8 @@ FILE_NAME_PREFIX = 'census_acs5'
 def create_file_name(year: int, table_name: str=None) -> str:
     """Create a file name for the processed Census data."""
     if table_name is None:
-        return f"{FILE_NAME_PREFIX}_base_{year}.csv"
-    return f"{FILE_NAME_PREFIX}_{table_name}_{year}.csv"
+        return f"{FILE_NAME_PREFIX}_base_zip_{year}.csv"
+    return f"{FILE_NAME_PREFIX}_{table_name}_zip_{year}.csv"
 
 def create_url(year: int, table: dict) -> str:
     """Create URL for Census API request."""
@@ -72,15 +72,17 @@ def main() -> None:
     # Load configuration
     config_path = os.path.join(
         os.getenv("PROJECT_PATH"),
-        'config/census_variables2.yml'
+        'config/census_variables.yml'
     )
     config = load_census_config(config_path)
     
-    # Set up folder
-    folder_path = os.path.join(os.getenv("PROJECT_PATH"), 'data/raw/census')
-    prepare_and_clean_folder(folder_path)
-    
+
     for table in config['tables']:
+
+        # Set up folder
+        folder_path = os.path.join(os.getenv("PROJECT_PATH"), 'data/raw/census', table['name'])
+        prepare_and_clean_folder(folder_path)
+        
         # Download data
         download_census_data(
             folder_path=folder_path,
