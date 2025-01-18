@@ -1,32 +1,41 @@
+# Default columns that are always included
 default_columns:
   - name: NAME
     description: Geographic Area Name
   - name: GEO_ID
     description: Geographic Identifier
 
+# Variable definitions
 variables:
-  median_household_income:
-    table: S1903
-    column: C03
-    row: "001"
-    description: Median household income in the past 12 months
-    years:
-      2016:  # Override for 2016
-        column: C02
-  
-  total_population:
-    table: S0101
-    column: C01
-    row: "001"
-    description: Total population
-  
-  median_rent:
-    table: B25031
-    row: "001"
-    description: Median gross rent
+  subject: # From the ACS Subject Tables
+    median_household_income:
+      table: S1903
+      column: C03
+      row: "001"
+      description: Median household income in the past 12 months
+      years:
+        2016:
+          column: C02
+
+    total_population:
+      table: S0101
+      column: C01
+      row: "001"
+      description: Total population
+  base: # From the ACS Base Tables
+    median_rent:
+      table: B25031
+      row: "001"
+      description: Median gross rent
+  data_profile: # From the ACS Data Profile Tables
+    total_housing_units:
+      table: DP04
+      row: "0001"
+      description: Total housing units
+  comparison_profile: # From the ACS Comparison Profile Tables
+
 
 suffixes:
-  table_prefix: S
     - code: E
       description: Estimate
     - code: M
@@ -35,18 +44,22 @@ suffixes:
       description: Estimate Annotation
     - code: MA
       description: Margin of Error Annotation
-  table_prefix: B
-    - code: E
-      description: Estimate
-  table_prefix: D
-    - code: E
-      description: Estimate
-    - code: P
-      description: Percent
 
+# Mapping of suffix codes to readable names
 suffix_mapping:
   E: estimate
   M: margin_of_error
   EA: estimate_annotation
   MA: margin_of_error_annotation
-  P: percent
+  PE: percent
+
+# List of available table types
+tables:
+  - name: subject
+    url_segment: subject
+  - name: base
+    url_segment:
+  - name: data_profile
+    url_segment: profile
+  #- name: comparison_profile
+  #  url_segment: cprofile

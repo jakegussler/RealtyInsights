@@ -5,17 +5,24 @@ logger = setup_logging()
 
 
 def create_output_dir(folderpath: str) -> None:
-
-    if not os.path.exists(folderpath):
-        os.makedirs(folderpath)
-        logger.info(f"Created directory: {folderpath}")
+    try:
+        if not os.path.exists(folderpath):
+            os.makedirs(folderpath)
+            logger.info(f"Created directory: {folderpath}")
+    except OSError as e:
+        logger.error(f"Error creating directory {folderpath}: {e}")
+        raise
 
 def write_response_to_csv(response, file_path: str) -> None:
-
-    with open(file_path, "wb") as file:
-        for chunk in response.iter_content(chunk_size=8192):
-            if chunk:
-                file.write(chunk)
+    try:
+        with open(file_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    file.write(chunk)
+        logger.info(f"Saved response to {file_path}")
+    except (IOError, OSError) as e:
+        logger.error(f"Failed to write response to {file_path}: {e}")
+        raise
 
 def write_df_to_csv(df, file_path: str, append: bool = False) -> None:
     try:
@@ -28,6 +35,7 @@ def write_df_to_csv(df, file_path: str, append: bool = False) -> None:
         logger.info(f"Saved data to {file_path}")
     except Exception as e:
         logger.error(f"Error saving data to {file_path}: {e}")
+        raise IOError(f"Failed to write DataFrame to CSV: {e}") from e
 
 def delete_csv(file_path: str) -> None:
     logger.info(f"Checking if CSV fie exists at {file_path}")
@@ -55,6 +63,7 @@ def clean_folder(folder_path: str) -> None:
                 delete_csv(os.path.join(folder_path, file))
     except Exception as e:
         logger.error(f"Error cleaning folder {folder_path}: {e}")
+        raise
 
 def prepare_and_clean_folder(folder_path: str) -> None:
     """
@@ -70,4 +79,5 @@ def prepare_and_clean_folder(folder_path: str) -> None:
         clean_folder(folder_path)
     except Exception as e:
         logger.error(f"Error preparing folder {folder_path}: {e}")
+        raise
 

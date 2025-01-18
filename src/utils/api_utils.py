@@ -64,6 +64,7 @@ def convert_json_to_df(data: list) -> None:
         return df
     except Exception as e: 
         logger.error(f"Error converting to Dataframe {e}")
+        return None
 
 
 def get_response_as_df(url, params: dict) -> pd.DataFrame:
@@ -72,14 +73,23 @@ def get_response_as_df(url, params: dict) -> pd.DataFrame:
     """
     logger.info(f"Downloading Data for {url}")
     data = get_response_as_json(url, params=params)
+
+    if data is None:
+        logger.error(f"No data received from {url}")
+        return None
+            
     if data:
         logger.info(f"Downloaded data for {url}")
+        logger.debug(f"Data structure type: {type(data)}")
+        logger.debug(f"First few elements: {data[:2] if isinstance(data, list) else data}")
+        
         #Process the data as a DataFrame
         df = convert_json_to_df(data)
 
-        logger.info(f"Processed data for {url}")
-        if df is not None:
-            return df
-        else:
+        if df is None:
+            logger.error(f"Failed to convert data to DataFrame for {url}")
             return None
+            
+        logger.info(f"Processed data for {url}")
+        return df
 

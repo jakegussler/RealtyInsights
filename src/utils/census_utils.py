@@ -1,6 +1,14 @@
 import yaml
 from typing import Dict, List, Optional
 import os
+from utils.logger_utils import setup_logging
+
+logger = setup_logging()
+
+def get_table_names(config: dict) -> List[str]:
+    """Get all table names from configuration."""
+    return config['table_types'].values()
+
 
 def load_census_config(config_path: str) -> dict:
     """Load the census configuration from YAML file."""
@@ -14,25 +22,38 @@ def generate_variable_code(
 ) -> str:
     """Generate a Census variable code for a specific year and suffix."""
     # Get year-specific configuration if it exists
-    year_config = variable_config.get('years', {}).get(year, {})
+    try:
+        year_config = variable_config.get('years', {}).get(year, {})
+    except AttributeError:
+        logger.error(f"Error getting year-specific configuration for {variable_config}")
+        raise
     
     # Use year-specific values or defaults
-    column = year_config.get('column', variable_config['column'])
-    row = year_config.get('row', variable_config['row'])
-    table = year_config.get('table', variable_config['table'])
-
-    # Dynamically create census code based on variable configuration
-    variable_code = table
-    if column is not None:
-        variable_code += f"_{column}"
-    if row is not None:
-        variable_code += f"_{row}"
+    try:
+        table = year_config.get('table', variable_config['table'])
+        column = year_config.get('column', variable_config.get('column'))
+        row = year_config.get('row', variable_config.get('row'))
+    except KeyError:
+        logger.error(f"Error getting variable configuration for {variable_config}")
+        raise
     
+    # Dynamically create census code based on variable configuration
+    try:
+        variable_code = table
+        if column is not None:
+            variable_code += f"_{column}"
+        if row is not None:
+            variable_code += f"_{row}"
+    except KeyError:
+        logger.error(f"Error generating variable code for {variable_config}")
+        raise
+
     return f"{variable_code}{suffix}"
 
 def get_all_variable_codes(
     config: dict,
-    year: int
+    year: int,
+    table_name: str
 ) -> List[str]:
     """Generate all variable codes for a given year."""
     codes = []
@@ -41,9 +62,9 @@ def get_all_variable_codes(
     codes.extend(col['name'] for col in config['default_columns'])
     
     # Generate codes for each variable with all suffixes
-    for variable_name, variable_config in config['variables'].items():
+    for variable_name, variable_config in config['variables'].get(table_name, {}).items():
         table_prefix = variable_config.get('table', '')[0]
-        for suffix in config['suffixes'].get(table_prefix, {}):
+        for suffix in config['suffixes']:
             code = generate_variable_code(
                 variable_config,
                 year,
@@ -53,9 +74,9 @@ def get_all_variable_codes(
     
     return codes
 
-def get_column_string(config: dict, year: int) -> str:
+def get_column_string(config: dict, year: int, table_name: str) -> str:
     """Get the complete column string for the API request."""
-    return ','.join(get_all_variable_codes(config, year))
+    return ','.join(get_all_variable_codes(config, year, table_name))
 
 def get_readable_column_name(var_name: str, suffix: dict, suffix_mappings: dict) -> str:
     """Get a human-readable column name for a variable and suffix."""
