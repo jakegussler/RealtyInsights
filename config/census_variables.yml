@@ -13,45 +13,596 @@ variables:
       column: C03
       row: "001"
       description: Median household income in the past 12 months
-      years:
+      overrides:
         2016:
           column: C02
-
-    total_population:
-      table: S0101
-      column: C01
+    population_below_poverty_level:
+      table: S1701
+      column: C03
       row: "001"
-      description: Total population
+      description: Population for whom poverty status is determined
+    population_below_poverty_level_under_18:
+      table: S1701
+      column: C03
+      row: "002"
+      description: Population below poverty level under 18 years
+
+          
+#    total_population:
+#      table: S0101
+#      column: C01
+#      row: "001"
+#      description: Total population
+
   base: # From the ACS Base Tables
+
     median_rent:
       table: B25031
       row: "001"
       description: Median gross rent
+
+    median_rent_studio:
+      table: B25031
+      row: "002"
+      description: Median gross rent for a studio apartment
+
+    median_rent_1_bedroom:
+      table: B25031
+      row: "003"
+      description: Median gross rent for a 1-bedroom apartment
+
+    median_rent_2_bedroom:
+      table: B25031
+      row: "004"
+      description: Median gross rent for a 2-bedroom apartment
+
+    median_rent_3_bedroom:
+      table: B25031
+      row: "005"
+      description: Median gross rent for a 3-bedroom apartment
+
+    median_rent_4_bedroom:
+      table: B25031
+      row: "006"
+      description: Median gross rent for a 4-bedroom apartment
+
+    median_rent_5_bedroom:
+      table: B25031
+      row: "007"
+      description: Median gross rent for a 5-bedroom apartment
+
+    residences_total:
+      table: B25041
+      row: "001"
+      description: Total number of residences
+
+    residences_studio:
+      table: B25041
+      row: "002"
+      description: Number of studio residences
+
+    residences_1_bedroom:
+      table: B25041
+      row: "003"
+      description: Number of 1-bedroom residences
+
+    residences_2_bedroom:
+      table: B25041
+      row: "004"
+      description: Number of 2-bedroom residences
+
+    residences_3_bedroom:
+      table: B25041
+      row: "005"
+      description: Number of 3-bedroom residences
+
+    residences_4_bedroom:
+      table: B25041
+      row: "006"
+      description: Number of 4-bedroom residences
+
+    residences_5_bedroom:
+      table: B25041
+      row: "007"
+      description: Number of 5-bedroom residences
+
   data_profile: # From the ACS Data Profile Tables
-    total_housing_units:
+
+    housing_units_total:
       table: DP04
       row: "0001"
       description: Total housing units
-  comparison_profile: # From the ACS Comparison Profile Tables
+
+    housing_units_occupied:
+      table: DP04
+      row: "0002"
+      description: Total occupied housing units
+    
+    housing_units_vacant:
+      table: DP04
+      row: "0003"
+      description: Total vacant housing units
+
+    housing_homeowner_vacancy_rate:
+      table: DP04
+      row: "0004"
+      description: Housing vacancy rate
+
+    housing_rental_vacancy_rate:
+      table: DP04
+      row: "0005"
+      description: Rental vacancy rate
+
+    housing_total_units_1_detached:
+      table: DP04
+      row: "0007"
+      description: Total 1-unit detached housing units
+
+    housing_total_units_1_attached:
+      table: DP04
+      row: "0008"
+      description: Total 1-unit attached housing units
+
+    housing_total_units_2:
+      table: DP04
+      row: "0009"
+      description: Total 2-unit housing units
+    
+    housing_total_units_3_to_4:
+      table: DP04
+      row: "0010"
+      description: Total 3 to 4-unit housing units
+    
+    housing_total_units_5_to_9:
+      table: DP04
+      row: "0011"
+      description: Total 5 to 9-unit housing units
+
+    housing_total_units_10_to_19:
+      table: DP04
+      row: "0012"
+      description: Total 10 to 19-unit housing units
+
+    housing_total_units_20_or_more:
+      table: DP04
+      row: "0013"
+      description: Total 20+ unit housing units
+    
+    housing_total_units_mobile_home:
+      table: DP04
+      row: "0014"
+      description: Total mobile home housing units
+    
+    housing_total_units_boat_rv_van_etc:
+      table: DP04
+      row: "0015"
+      description: Total boat, RV, van, etc. housing units
+
+    housing_built_2020_or_later:
+      table: DP04
+      row: "0017"
+      description: Total housing units built in 2020 or later
+
+    housing_built_2010_to_2019:
+      table: DP04
+      row: "0018"
+      description: Total housing units built in 2010 to 2019
+
+    housing_built_2000_to_2009:
+      table: DP04
+      row: "0019"
+      description: Total housing units built in 2000 to 2009
+
+    housing_built_1990_to_1999:
+      table: DP04
+      row: "0020"
+      description: Total housing units built in 1990 to 1999
+    
+    housing_built_1980_to_1989:
+      table: DP04
+      row: "0021"
+      description: Total housing units built in 1980 to 1989
+    
+    housing_built_1970_to_1979:
+      table: DP04
+      row: "0022"
+      description: Total housing units built in 1970 to 1979
+
+    housing_built_1960_to_1969:
+      table: DP04
+      row: "0023"
+      description: Total housing units built in 1960 to 1969
+    
+    housing_built_1950_to_1959:
+      table: DP04
+      row: "0024"
+      description: Total housing units built in 1950 to 1959
+    
+    housing_built_1940_to_1949:
+      table: DP04
+      row: "0025"
+      description: Total housing units built in 1940 to 1949
+    
+    housing_built_1939_or_earlier:
+      table: DP04
+      row: "0026"
+      description: Total housing units built in 1939 or earlier
+
+    housing_bedrooms_0:
+      table: DP04
+      row: "0039"
+      description: Total housing units with 0 bedroom
+
+    housing_bedrooms_1:
+      table: DP04
+      row: "0040"
+      description: Total housing units with 1 bedrooms
+
+    housing_bedrooms_2:
+      table: DP04
+      row: "0041"
+      description: Total housing units with 2 bedrooms
+    
+    housing_bedrooms_3:
+      table: DP04
+      row: "0042"
+      description: Total housing units with 3 bedrooms
+    
+    housing_bedrooms_4:
+      table: DP04
+      row: "0043"
+      description: Total housing units with 4 bedrooms
+    
+    housing_bedrooms_5_or_more:
+      table: DP04
+      row: "0044"
+      description: Total housing units with 5 or more bedrooms
+    
+    housing_owner_occupided_value_under_50:
+      table: DP04
+      row: "0081"
+      description: Total housing units with value under $50,000
+    
+    housing_owner_occupided_value_50_to_99:
+      table: DP04
+      row: "0082"
+      description: Total housing units with value $50,000 to $99,999
+    
+    housing_owner_occupided_value_100_to_149:
+      table: DP04
+      row: "0083"
+      description: Total housing units with value $100,000 to $149,999
+    
+    housing_owner_occupided_value_150_to_199:
+      table: DP04
+      row: "0084"
+      description: Total housing units with value $150,000 to $199,999
+
+    housing_owner_occupided_value_200_to_299:
+      table: DP04
+      row: "0085"
+      description: Total housing units with value $200,000 to $299,999
+
+    housing_owner_occupided_value_300_to_499:
+      table: DP04
+      row: "0086"
+      description: Total housing units with value $300,000 to $499,999
+    
+    housing_owner_occupided_value_500_to_999:
+      table: DP04
+      row: "0087"
+      description: Total housing units with value $500,000 to $999,999
+
+    housing_owner_occupided_value_1000_or_more:
+      table: DP04
+      row: "0088"
+      description: Total housing units with value $1,000,000 or more
+    
+    housing_units_with_mortgage:
+      table: DP04
+      row: "0093"
+      description: Total housing units with a mortgage
+    
+    housing_units_without_mortgage:
+      table: DP04
+      row: "0102"
+      description: Total housing units without a mortgage
+
+    housing_smocapi_total_mortgaged_houses_20_pct_or_less:
+      table: DP04
+      row: "0111"
+      description: Total housing units with selected monthly owner costs (SMOC) of 20% or less for mortgaged owners
+
+    housing_smocapi_total_mortgaged_houses_20_to_24_9_pct:
+      table: DP04
+      row: "0112"
+      description: Total housing units with selected monthly owner costs (SMOC) of 20% to 24.9% for mortgaged owners
+
+    housing_smocapi_total_mortgaged_houses_25_to_29_9_pct:
+      table: DP04
+      row: "0113"
+      description: Total housing units with selected monthly owner costs (SMOC) of 25% to 29.9% for mortgaged owners
+
+    housing_smocapi_total_mortgaged_houses_30_to_34_9_pct:
+      table: DP04
+      row: "0114"
+      description: Total housing units with selected monthly owner costs (SMOC) of 30% to 34.9% for mortgaged owners
+
+    housing_smocapi_total_mortgaged_houses_35_pct_or_more:
+      table: DP04
+      row: "0115"
+      description: Total housing units with selected monthly owner costs (SMOC) of 35% or more for mortgaged owners
+    
+    housing_smocapi_total_non_mortgaged_houses_10_pct_or_less:
+      table: DP04
+      row: "0118"
+      description: Total housing units with selected monthly owner costs (SMOC) of 10% or less for non-mortgaged owners
+
+    housing_smocapi_total_non_mortgaged_houses_10_to_14_9_pct:
+      table: DP04
+      row: "0119"
+      description: Total housing units with selected monthly owner costs (SMOC) of 10% to 14.9% for non-mortgaged owners
+    
+    housing_smocapi_total_non_mortgaged_houses_15_to_19_9_pct:
+      table: DP04
+      row: "0120"
+      description: Total housing units with selected monthly owner costs (SMOC) of 15% to 19.9% for non-mortgaged owners
+
+    housing_smocapi_total_non_mortgaged_houses_20_to_24_9_pct:
+      table: DP04
+      row: "0121"
+      description: Total housing units with selected monthly owner costs (SMOC) of 20% to 24.9% for non-mortgaged owners
+
+    housing_smocapi_total_non_mortgaged_houses_25_to_29_9_pct:
+      table: DP04
+      row: "0122"
+      description: Total housing units with selected monthly owner costs (SMOC) of 25% to 29.9% for non-mortgaged owners
+
+    housing_smocapi_total_non_mortgaged_houses_30_to_34_9_pct:
+      table: DP04
+      row: "0123"
+      description: Total housing units with selected monthly owner costs (SMOC) of 30% to 34.9% for non-mortgaged owners
+
+    housing_smocapi_total_non_mortgaged_houses_35_pct_or_more:
+      table: DP04
+      row: "0124"
+      description: Total housing units with selected monthly owner costs (SMOC) of 35% or more for non-mortgaged owners
+
+    housing_rent_gross_reported_500_or_under:
+      table: DP04
+      row: "0127"
+      description: Total renter-occupied housing units with gross rent reported $500 or under
+
+    housing_rent_gross_reported_500_to_999:
+      table: DP04
+      row: "0128"
+      description: Total renter-occupied housing units with gross rent reported $500 to $999
+
+    housing_rent_gross_reported_1000_to_1499:
+      table: DP04
+      row: "0129"
+      description: Total renter-occupied housing units with gross rent reported $1000 to $1499
+    
+    housing_rent_gross_reported_1500_to_1999:
+      table: DP04
+      row: "0130"
+      description: Total renter-occupied housing units with gross rent reported $1500 to $1999
+
+    housing_rent_gross_reported_2000_to_2499:
+      table: DP04
+      row: "0131"
+      description: Total renter-occupied housing units with gross rent reported $2000 to $2499
+    
+    housing_rent_gross_reported_2500_to_2999:
+      table: DP04
+      row: "0132"
+      description: Total renter-occupied housing units with gross rent reported $2500 to $2999
+
+    housing_rent_gross_reported_3000_or_more:
+      table: DP04
+      row: "0133"
+      description: Total renter-occupied housing units with gross rent reported $3000 or more
+
+    housing_rent_gross_reported_median_dollars:
+      table: DP04
+      row: "0134"
+      description: Median gross rent
+
+    housing_rent_gross_reported_no_rent_paid:
+      table: DP04
+      row: "0135"
+      description: Total renter-occupied housing units with no rent paid
+
+    
+
+    housing_rent_grapi_15_pct_or_less:
+      table: DP04
+      row: "0137"
+      description: Total renter-occupied housing units with gross rent as a percentage of household income (GRAPI) of 20% or less
+    
+    housing_rent_grapi_15_to_19_9_pct:
+      table: DP04
+      row: "0138"
+      description: Total renter-occupied housing units with gross rent as a percentage of household income (GRAPI) of 15% to 19.9%
+
+    housing_rent_grapi_20_to_24_9_pct:
+      table: DP04
+      row: "0139"
+      description: Total renter-occupied housing units with gross rent as a percentage of household income (GRAPI) of 20% to 24.9%
+
+    housing_rent_grapi_25_to_29_9_pct:
+      table: DP04
+      row: "0140"
+      description: Total renter-occupied housing units with gross rent as a percentage of household income (GRAPI) of 25% to 29.9%
+
+    housing_rent_grapi_30_to_34_9_pct:
+      table: DP04
+      row: "0141"
+      description: Total renter-occupied housing units with gross rent as a percentage of household income (GRAPI) of 30% to 34.9%
+    
+    housing_rent_grapi_35_pct_or_more:
+      table: DP04
+      row: "0142"
+      description: Total renter-occupied housing units with gross rent as a percentage of household income (GRAPI) of 35% or more
+
+    population_total:
+      table: DP05
+      row: "0001"
+      description: Total population
+
+
+    population_male:
+      table: DP05
+      row: "0002"
+      description: Total male population
+    
+    population_female:
+      table: DP05
+      row: "0003"
+      description: Total female population
+
+    population_age_under_5:
+      table: DP05
+      row: "0005"
+      description: Population under 5 years old
+    
+    population_age_5_to_9:
+      table: DP05
+      row: "0005"
+      description: Population 5 to 9 years old
+
+    population_age_10_to_14:
+      table: DP05
+      row: "0007"
+      description: Population 10 to 14 years old
+    
+    population_age_15_to_19: 
+      table: DP05
+      row: "0008"
+      description: Population 15 to 19 years old
+
+    population_age_20_to_24:
+      table: DP05
+      row: "0009"
+      description: Population 20 to 24 years old
+
+    population_age_25_to_34:
+      table: DP05
+      row: "0010"
+      description: Population 25 to 34 years old
+
+    population_age_35_to_44:
+      table: DP05
+      row: "0011"
+      description: Population 35 to 44 years old
+    
+    population_age_45_to_54: 
+      table: DP05
+      row: "0012"
+      description: Population 45 to 54 years old
+    
+    population_age_55_to_59:
+      table: DP05
+      row: "0013"
+      description: Population 55 to 59 years old
+    
+    population_age_60_to_64:
+      table: DP05
+      row: "0014"
+      description: Population 60 to 64 years old
+    
+    population_age_65_to_74:
+      table: DP05
+      row: "0015"
+      description: Population 65 to 74 years old
+    
+    population_age_75_to_84:
+      table: DP05
+      row: "0016"
+      description: Population 75 to 84 years old
+    
+    population_age_85_and_over:
+      table: DP05
+      row: "0017"
+      description: Population 85 years and older
+
+    population_median_age:
+      table: DP05
+      row: "0018"
+      description: Median age
+
+    population_race_white:
+      table: DP05
+      row: "0069"
+      description: White population
+
+    population_race_black_or_african_american:
+      table: DP05
+      row: "0070"
+      description: Black or African American population
+    
+    population_race_american_indian_and_alaska_native:
+      table: DP05
+      row: "0071"
+      description: American Indian and Alaska Native population
+    
+    population_race_asian:
+      table: DP05
+      row: "0072"
+      description: Asian population
+    
+    population_race_native_hawaiian_and_other_pacific_islander:
+      table: DP05
+      row: "0073"
+      description: Native Hawaiian and Other Pacific Islander population
+    
+    population_race_some_other:
+      table: DP05
+      row: "0074"
+      description: Some other
+    
+    population_latino:
+      table: DP05
+      row: "0076"
+      description: Latino population
+
+    population_latino_mexican:
+      table: DP05
+      row: "0077"
+      description: Mexican population
+    
+    population_latino_puerto_rican:
+      table: DP05
+      row: "0078"
+      description: Puerto Rican population
+    
+    population_latino_cuban:
+      table: DP05
+      row: "0079"
+      description: Cuban population
+    
+    population_latino_other:
+      table: DP05
+      row: "0080"
+      description: Other Latino population
+    
+ # comparison_profile: # From the ACS Comparison Profile Tables
 
 
 suffixes:
     - code: E
       description: Estimate
+      mapping: estimate
     - code: M
       description: Margin of Error
+      mapping: margin_of_error
     - code: EA
       description: Estimate Annotation
+      mapping: estimate_annotation
     - code: MA
       description: Margin of Error Annotation
+      mapping: margin_of_error_annotation
 
-# Mapping of suffix codes to readable names
-suffix_mapping:
-  E: estimate
-  M: margin_of_error
-  EA: estimate_annotation
-  MA: margin_of_error_annotation
-  PE: percent
 
 # List of available table types
 tables:
@@ -61,5 +612,5 @@ tables:
     url_segment:
   - name: data_profile
     url_segment: profile
-  #- name: comparison_profile
-  #  url_segment: cprofile
+#  - name: comparison_profile
+#    url_segment: cprofile
