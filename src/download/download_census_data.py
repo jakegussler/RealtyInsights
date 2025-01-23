@@ -4,7 +4,7 @@ import os
 from utils.logger_utils import setup_logging
 from utils.api_utils import get_response_as_df
 from utils.file_utils import prepare_and_clean_folder, write_df_to_csv
-from utils.census_utils import load_census_config, get_column_string
+from utils.census_utils2 import load_census_config, get_column_string
 
 logger = setup_logging()
 load_dotenv()
@@ -24,13 +24,13 @@ def create_url(year: int, table: dict) -> str:
         return f"{BASE_URL_TEMPLATE.format(year=str(year))}"
     return f"{BASE_URL_TEMPLATE.format(year=str(year))}/{table['url_segment']}"
 
-def get_census_as_df(year: int, config: dict, table: dict) -> pd.DataFrame | None:
+def get_census_as_df(config: dict, year: int, table: dict, variables: list) -> pd.DataFrame | None:
     """Retrieve data from the Census API for a specific year."""
     url = create_url(year, table)
     table_name = table['name']
 
     params = {
-        'get': get_column_string(config, year, table_name),
+        'get': get_column_string(config, year, table_name, variables),
         'for': 'zip code tabulation area:*'
     }
     
@@ -56,17 +56,32 @@ def download_census_data(
     table_name = table['name']
 
     for year in years:
-        file_name = create_file_name(year, table_name)
-        file_path = os.path.join(folder_path, file_name)
 
-        try:
-            df = get_census_as_df(year, config, table)
-            if df is not None:
-                write_df_to_csv(df, file_path, append=True)
-            else:
-                logger.error("Dataframe is None, skipping write to CSV")
-        except Exception as e:
-            logger.error(f"Error saving {year} data to {file_path}: {e}")
+        num_variables = len(config['variables'].get(table_name, []))
+        # Split variables into chunks of 12 to avoid API column number limit
+        chunk_size = 12
+        num_chunks = (num_variables + chunk_size - 1) // chunk_size 
+
+        for i in range(num_chunks):
+
+            # Get variables for this chunk
+            start = i * chunk_size
+            end = min((i + 1) * chunk_size, num_variables)
+            variables = list(config['variables'].get(table_name, []))[start:end]
+
+            file_name = create_file_name(year, table_name)
+            if i > 0:
+                file_name = file_name.replace('.csv', f'_{i}.csv')
+            file_path = os.path.join(folder_path, file_name)
+
+            try:
+                df = get_census_as_df(config, year, table, variables)
+                if df is not None:
+                    write_df_to_csv(df, file_path, append=True)
+                else:
+                    logger.error("Dataframe is None, skipping write to CSV")
+            except Exception as e:
+                logger.error(f"Error saving {year} data to {file_path}: {e}")
 
 def main() -> None:
     # Load configuration

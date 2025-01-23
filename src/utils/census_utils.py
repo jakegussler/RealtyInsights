@@ -17,20 +17,22 @@ def load_census_config(config_path: str) -> dict:
 
 def generate_variable_code(
     variable_config: dict,
-    year: int,
-    suffix: str
-) -> str:
+    suffix: str,
+    year: int=None
+) -> str | None:
     """Generate a Census variable code for a specific year and suffix."""
     # Get year-specific configuration if it exists
     try:
-        year_config = variable_config.get('years', {}).get(year, {})
+        year_config = variable_config.get('overrides', {}).get(year, {})
+        if year_config.get('missing', {}) is True:
+            return None
     except AttributeError:
         logger.error(f"Error getting year-specific configuration for {variable_config}")
         raise
     
     # Use year-specific values or defaults
     try:
-        table = year_config.get('table', variable_config['table'])
+        table = year_config.get('table', variable_config.get('table'))
         column = year_config.get('column', variable_config.get('column'))
         row = year_config.get('row', variable_config.get('row'))
     except KeyError:
@@ -53,38 +55,38 @@ def generate_variable_code(
 def get_all_variable_codes(
     config: dict,
     year: int,
-    table_name: str
+    table_name: str,
+    variables: List[str]
 ) -> List[str]:
     """Generate all variable codes for a given year."""
     codes = []
     
     # Add default columns first
     codes.extend(col['name'] for col in config['default_columns'])
-    
+
     # Generate codes for each variable with all suffixes
-    for variable_name, variable_config in config['variables'].get(table_name, {}).items():
-        table_prefix = variable_config.get('table', '')[0]
+    for variable in variables:
+        variable_config = config['variables'][table_name][variable]
         for suffix in config['suffixes']:
             code = generate_variable_code(
                 variable_config,
-                year,
-                suffix['code']
+                suffix['code'],
+                year
             )
-            codes.append(code)
+            if code is not None:
+                codes.append(code)
     
     return codes
 
-def get_column_string(config: dict, year: int, table_name: str) -> str:
+def get_column_string(
+        config: dict,
+        year: int, 
+        table_name: str, 
+        variables: List[str]
+    ) -> str:
     """Get the complete column string for the API request."""
-    return ','.join(get_all_variable_codes(config, year, table_name))
+    return ','.join(get_all_variable_codes(config, year, table_name, variables))
 
-def get_readable_column_name(var_name: str, suffix: dict, suffix_mappings: dict) -> str:
-    """Get a human-readable column name for a variable and suffix."""
-    if suffix['code'] == 'E':  # Base estimate
-        return var_name
-    
-    mapping = suffix_mappings.get(suffix['code'], suffix['code'].lower())
-    return f"{var_name}_{mapping}"
 
 def create_column_mapping(config: dict) -> Dict[str, str]:
     """
@@ -98,25 +100,24 @@ def create_column_mapping(config: dict) -> Dict[str, str]:
         mapping[col['name']] = col['name'].lower()
 
     
-    for var_name, var_config in config['variables'].items():
-        # Get table prefix for variable
-        table_prefix = var_config.get('table', '')[0]
+    for table_name, table_config in config['variables'].items():
 
-        # Map year-specific variables
-        if var_config.get('years') is not None:
-            # Loop through year-specific configurations
-            for year, year_config in var_config['years'].items():
-                # Generate variable code for each suffix based on table prefix
-                for suffix in config['suffixes'].get(table_prefix, {}):
-                    variable_code = generate_variable_code(var_config, suffix['code'], year)
-                    readable_name = get_readable_column_name(var_name, suffix, year)
+        for var_name, var_config in table_config.items():
+            # Map year-specific variables
+            if var_config.get('overrides') is not None:
+                # Loop through year-specific configurations
+                for year, year_config in var_config['overrides'].items():
+                    # Generate variable code for each suffix based on table prefix
+                    for suffix in config['suffixes']:
+                        variable_code = generate_variable_code(var_config, suffix['code'], year)
+                        readable_name = f"{var_name}_{suffix['mapping'].lower()}"
 
+                        mapping[variable_code] = readable_name.lower()
+                # Map standard variables
+                for suffix in config['suffixes']:
+                    variable_code = generate_variable_code(var_config, suffix['code'])
+                    readable_name = f"{var_name}_{suffix['mapping'].lower()}"
+                    
                     mapping[variable_code] = readable_name.lower()
-        # Map standard variables
-        for suffix in config['suffixes'].get(table_prefix, {}):
-            variable_code = generate_variable_code(var_config, suffix['code'])
-            readable_name = get_readable_column_name(var_name, suffix)
-            
-            mapping[variable_code] = readable_name.lower()
     
     return mapping
