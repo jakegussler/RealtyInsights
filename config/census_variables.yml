@@ -413,8 +413,6 @@ variables:
       row: "0135"
       description: Total renter-occupied housing units with no rent paid
 
-    
-
     housing_rent_grapi_15_pct_or_less:
       table: DP04
       row: "0137"
@@ -449,7 +447,6 @@ variables:
       table: DP05
       row: "0001"
       description: Total population
-
 
     population_male:
       table: DP05
@@ -596,12 +593,12 @@ suffixes:
     - code: M
       description: Margin of Error
       mapping: margin_of_error
-    - code: EA
-      description: Estimate Annotation
-      mapping: estimate_annotation
-    - code: MA
-      description: Margin of Error Annotation
-      mapping: margin_of_error_annotation
+#    - code: EA
+#      description: Estimate Annotation
+#      mapping: estimate_annotation
+#    - code: MA
+#      description: Margin of Error Annotation
+#      mapping: margin_of_error_annotation
 
 
 # List of available table types

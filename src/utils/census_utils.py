@@ -85,7 +85,9 @@ def get_column_string(
         variables: List[str]
     ) -> str:
     """Get the complete column string for the API request."""
-    return ','.join(get_all_variable_codes(config, year, table_name, variables))
+    variable_codes = get_all_variable_codes(config, year, table_name, variables)
+    logger.info(f"Number of variables being passed to API {len(variable_codes)}")
+    return ','.join(variable_codes)
 
 
 def create_column_mapping(config: dict) -> Dict[str, str]:
@@ -113,11 +115,11 @@ def create_column_mapping(config: dict) -> Dict[str, str]:
                         readable_name = f"{var_name}_{suffix['mapping'].lower()}"
 
                         mapping[variable_code] = readable_name.lower()
-                # Map standard variables
-                for suffix in config['suffixes']:
-                    variable_code = generate_variable_code(var_config, suffix['code'])
-                    readable_name = f"{var_name}_{suffix['mapping'].lower()}"
-                    
-                    mapping[variable_code] = readable_name.lower()
+            # Map standard variables
+            for suffix in config['suffixes']:
+                variable_code = generate_variable_code(var_config, suffix['code'])
+                readable_name = f"{var_name}_{suffix['mapping'].lower()}"
+                
+                mapping[variable_code] = readable_name.lower()
     
     return mapping
