@@ -13,7 +13,4 @@ DB_CONFIG = {
     'database': os.getenv('DB_NAME')
 }
 
-API_CONFIG = {
-    
-}
 

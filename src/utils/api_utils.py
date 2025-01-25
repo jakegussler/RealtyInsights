@@ -24,6 +24,7 @@ def get_response(url, params=None, max_retries=10, retry_delay=5, timeout=30):
         
         except requests.exceptions.RequestException as e:
             logger.info(f'Attempt {attempt + 1} of {max_retries} failed: {str(e)}')
+            logger.info(f"Response content: {response.content}")
             if attempt < max_retries:
                 logger.info(f"Retrying in {retry_delay} seconds...")
                 

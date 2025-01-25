@@ -1,15 +1,11 @@
 import pandas as pd
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 from utils.logger_utils import setup_logging
-from utils.file_utils import write_df_to_csv, prepare_and_clean_folder
+from utils.file_utils import write_df_to_csv, prepare_and_clean_folder, get_project_path
 from utils.census_utils import load_census_config, create_column_mapping
 
-load_dotenv()
 logger = setup_logging()
-
-PROCESSED_FILE_NAME_TEMPLATE = 'census_{table_name}_zip.csv'
 
 def add_year_column(df: pd.DataFrame, year: int) -> pd.DataFrame:
     """Add year column to DataFrame."""
@@ -29,15 +25,21 @@ def get_year_from_file_name(file_name: str) -> str:
         logger.error(f"Error getting year from filename {file_name}: {e}")
         return None
     
-def get_base_file_name(file_path: str) -> str:
-    """Extract base filename from full path."""
+def get_base_name(file_name):
+   """Get base table name by removing suffix after second-to-last underscore."""
+   return file_name.rsplit('_', 2)[0]
 
-    file_name = os.path.basename(file_path)
-    try:
-        return os.path.basename(file_name).split('_0')[0]
-    except Exception as e:
-        logger.error(f"Error getting base file name from {file_name}: {e}")
-        return None
+def get_consolidated_file_name(file_name: str) -> str:
+    """Get consolidated file name based"""
+    return f"{get_base_name(file_name)}.csv"
+
+def get_processed_file_path(raw_file_path: str) -> str:
+    file_name = os.path.basename(raw_file_path)
+    return os.path.join(
+        get_project_path(),
+        "data/processed/census",
+        get_consolidated_file_name(file_name)
+    )
 
 def map_columns(df: pd.DataFrame, column_mapping: dict) -> pd.DataFrame:
     """Map DataFrame columns using configuration."""
@@ -136,26 +138,24 @@ def process_and_consolidate_census_files(
     # Process each file in each census table folder
     for folder in os.listdir(raw_folder_path):
         # Create processed file path using table name from raw folder path being processed
-        project_path = os.getenv("PROJECT_PATH")
         raw_subfolder_path = os.path.join(raw_folder_path, folder)
-        processed_file_path = os.path.join(
-            project_path,
-            "data/processed/census",
-            PROCESSED_FILE_NAME_TEMPLATE.format(table_name=os.path.basename(folder))
-        )
+
         # Process each file in the folder
-        for file in os.listdir(os.path.join(raw_folder_path, folder)):
+        for file_name in os.listdir(os.path.join(raw_folder_path, folder)):
             # Process the first file for each year
-            if file.endswith("_0.csv"):
+            if file_name.endswith("_0.csv"):
+                raw_file_path = os.path.join(raw_subfolder_path, file_name)
+                processed_file_path = get_processed_file_path(raw_file_path)
+
                 process_census_file(
-                    raw_file_path=os.path.join(raw_subfolder_path, file),
+                    raw_file_path=os.path.join(raw_subfolder_path, file_name),
                     processed_file_path=processed_file_path,
                     column_mapping=column_mapping
                 )
 
 def main() -> None:
     # Load paths from environment
-    project_path = os.getenv("PROJECT_PATH")
+    project_path = get_project_path()
     census_raw_folder = os.path.join(project_path, 'data/raw/census')
 
     config_path = os.path.join(project_path, 'config/census_variables.yml')

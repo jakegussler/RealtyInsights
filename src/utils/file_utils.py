@@ -1,5 +1,6 @@
 import os
 from utils.logger_utils import setup_logging
+from pathlib import Path
 
 logger = setup_logging()
 
@@ -79,5 +80,12 @@ def prepare_and_clean_folder(folder_path: str) -> None:
         clean_folder(folder_path)
     except Exception as e:
         logger.error(f"Error preparing folder {folder_path}: {e}")
+        raise
+
+def get_project_path() -> str:
+    try:
+        Path(__file__).parent.parent.resolve()
+    except Exception as e:
+        logger.error(f"Error getting project path: {e}")
         raise
 

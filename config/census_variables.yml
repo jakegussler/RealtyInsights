@@ -16,6 +16,8 @@ variables:
       overrides:
         2016:
           column: C02
+        2017:
+          missing: True
     population_below_poverty_level:
       table: S1701
       column: C03
@@ -610,4 +612,21 @@ tables:
   - name: data_profile
     url_segment: profile
 #  - name: comparison_profile
-#    url_segment: cprofile
+#    segment: cprofile
+
+geo_levels:
+  - name: us
+    for_parameter: us
+    file_name_segment: us 
+  - name: county
+    for_parameter: county
+    file_name_segment: county
+  - name: place
+    for_parameter: place
+    file_name_segment: place
+  #- name: block groups
+  #  for_parameter: block
+  #  file_name_segment: block
+  - name: zip code
+    for_parameter: zip code tabulation area
+    file_name_segment: zcta
