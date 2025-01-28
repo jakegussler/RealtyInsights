@@ -16,8 +16,6 @@ variables:
       overrides:
         2016:
           column: C02
-        2017:
-          missing: True
     population_below_poverty_level:
       table: S1701
       column: C03
@@ -605,10 +603,10 @@ suffixes:
 
 # List of available table types
 tables:
-  - name: subject
-    url_segment: subject
-  - name: base
-    url_segment:
+#  - name: subject
+#    url_segment: subject
+#  - name: base
+#    url_segment:
   - name: data_profile
     url_segment: profile
 #  - name: comparison_profile
@@ -621,9 +619,9 @@ geo_levels:
   - name: county
     for_parameter: county
     file_name_segment: county
-  - name: place
-    for_parameter: place
-    file_name_segment: place
+  #- name: place
+  #  for_parameter: place
+  #  file_name_segment: place
   #- name: block groups
   #  for_parameter: block
   #  file_name_segment: block
