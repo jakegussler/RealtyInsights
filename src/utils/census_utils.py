@@ -1,6 +1,5 @@
 import yaml
-from typing import Dict, List, Optional
-import os
+from typing import Dict, List
 from utils.logger_utils import setup_logging
 
 logger = setup_logging()

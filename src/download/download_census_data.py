@@ -4,12 +4,12 @@ import os
 import math
 from pathlib import Path
 from utils.logger_utils import setup_logging
-from utils.api_utils import get_respon e_as_df
+from utils.api_utils import get_response_as_df
 from utils.file_utils import prepare_and_clean_folder, write_df_to_csv, get_project_path
 from utils.census_utils import load_census_config, get_column_string
 
 logger = setup_logging()
-load_dotenv()
+#load_dotenv()
 
 BASE_URL_TEMPLATE = 'https://api.census.gov/data/{year}/acs/acs5'
 FILE_NAME_PREFIX = 'census_acs5'
@@ -57,6 +57,18 @@ def calculate_num_chunks(config: dict, table_name: str) -> int:
     chunk_size = calculate_chunk_size(config, table_name)
     return (num_variables + chunk_size - 1) // chunk_size
 
+def calculate_chunk_variables(config: dict, table_name: str, chunk_index: int) -> list:
+    """Calculate variables for a chunk accounting for suffixes multiplication."""
+    num_suffixes = len(config['suffixes'])
+    # Maximum variables divided by number of suffixes to get parent variable limit
+    parent_var_limit = 50 // num_suffixes
+    
+    variables = list(config['variables'].get(table_name, []))
+    start = chunk_index * parent_var_limit
+    end = min((chunk_index + 1) * parent_var_limit, len(variables))
+    
+    return variables[start:end]
+
 def download_census_data(
     folder_path: str,
     first_year: int,
@@ -72,24 +84,14 @@ def download_census_data(
 
         for year in years:
 
-            num_variables = sum(
-                not var.get('overrides', {}).get(year, {}).get('missing', False)
-                for var in config['variables'].get(table_name, []).values()
-            )
-            # Split variables into chunks by dividing max number of variables by number of suffixes
-            chunk_size = math.floor(50 / len(config['suffixes']))
             num_chunks = calculate_num_chunks(config, table_name)
-
-            for i in range(num_chunks):
-
-                # Get variables for this chunk
-                start = i * chunk_size
-                end = min((i + 1) * chunk_size, num_variables)
-                variables = list(config['variables'].get(table_name, []))[start:end - 1]
-                logger.info(f"Downloading data for {year} chunk {i+1}/{num_chunks}\n")
+            for chunk_index in range(num_chunks):
+                # Get variables for this chunk       
+                variables = calculate_chunk_variables(config, table_name, chunk_index)
+                logger.info(f"Downloading data for {year} chunk {chunk_index+1}/{num_chunks}\n")
                 logger.debug(f"Variables: {variables}")
 
-                file_name = create_file_name(year, i, geo_level['file_name_segment'], table_name)
+                file_name = create_file_name(year, chunk_index, geo_level['file_name_segment'], table_name)
                 file_path = os.path.join(folder_path, file_name)
 
                 try:

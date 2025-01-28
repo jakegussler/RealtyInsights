@@ -82,10 +82,27 @@ def prepare_and_clean_folder(folder_path: str) -> None:
         logger.error(f"Error preparing folder {folder_path}: {e}")
         raise
 
+
 def get_project_path() -> str:
+    """
+    Get the project root path by finding the first directory above the site-packages
+    that contains pyproject.toml
+    """
     try:
-        Path(__file__).parent.parent.resolve()
+        # Start from current file's directory
+        current_path = Path(__file__).resolve()
+        
+        # Walk up directories until we find pyproject.toml
+        while current_path != current_path.parent:  # Stop at root
+            if (current_path / 'pyproject.toml').exists():
+                return str(current_path)
+            current_path = current_path.parent
+            
+        # If we reach here, we didn't find pyproject.toml
+        raise FileNotFoundError("Could not find project root (no pyproject.toml found)")
+    
     except Exception as e:
         logger.error(f"Error getting project path: {e}")
         raise
+
 
