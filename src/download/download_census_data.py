@@ -1,30 +1,33 @@
 import pandas as pd
-from dotenv import load_dotenv
 import os
 import math
-from pathlib import Path
+from typing import TypedDict
 from utils.logger_utils import setup_logging
 from utils.api_utils import get_response_as_df
 from utils.file_utils import prepare_and_clean_folder, write_df_to_csv, get_project_path
 from utils.census_utils import load_census_config, get_column_string
 
 logger = setup_logging()
-#load_dotenv()
 
-BASE_URL_TEMPLATE = 'https://api.census.gov/data/{year}/acs/acs5'
-FILE_NAME_PREFIX = 'census_acs5'
+class CensusConfig(TypedDict):
+    variables: dict[str, dict]
+    suffixes: list[str]
+    geo_levels: list[dict]
+    default_columns: list[str]
 
-def create_file_name(year: int, chunk_number: int,geo_level: str, table_name: str=None) -> str:
+
+def create_file_name(config: dict, year: int, chunk_number: int,geo_level: str, table_name: str=None) -> str:
     """Create a file name for the processed Census data."""
-    if table_name is None:
-        return f"{FILE_NAME_PREFIX}_base_zip_{year}_{chunk_number}.csv"
-    return f"{FILE_NAME_PREFIX}_{table_name}_{geo_level}_{year}_{chunk_number}.csv"
+    file_name_prefix = config['constants']['file_name_prefix']
 
-def create_url(year: int, table: dict) -> str:
+    return f"{file_name_prefix}_{table_name}_{geo_level}_{year}_{chunk_number}.csv"
+
+def create_url(config: dict, year: int, table: dict) -> str:
     """Create URL for Census API request."""
+    base_url_template = config['constants']['base_url_template']
     if table['url_segment'] is None:
-        return f"{BASE_URL_TEMPLATE.format(year=str(year))}"
-    return f"{BASE_URL_TEMPLATE.format(year=str(year))}/{table['url_segment']}"
+        return f"{base_url_template.format(year=str(year))}"
+    return f"{base_url_template.format(year=str(year))}/{table['url_segment']}"
 
 def get_census_as_df(config: dict, year: int, table: dict, geo_level:dict, variables: list) -> pd.DataFrame | None:
     """Retrieve data from the Census API for a specific year."""
@@ -58,10 +61,16 @@ def calculate_num_chunks(config: dict, table_name: str) -> int:
     return (num_variables + chunk_size - 1) // chunk_size
 
 def calculate_chunk_variables(config: dict, table_name: str, chunk_index: int) -> list:
-    """Calculate variables for a chunk accounting for suffixes multiplication."""
+    """
+    Calculate variables for a chunk accounting for suffixes multiplication.
+    In the census data, each variable has multiple suffixes that represent different measures.
+    The API allows for a maximum of 50 variables per request. This function calculates the
+    variables for a chunk based on the number of suffixes and the total number of variables.
+    """
     num_suffixes = len(config['suffixes'])
-    # Maximum variables divided by number of suffixes to get parent variable limit
-    parent_var_limit = 50 // num_suffixes
+    num_default_columns = len(config['default_columns'])
+    child_var_limit = 50
+    parent_var_limit = (child_var_limit - num_default_columns) // num_suffixes
     
     variables = list(config['variables'].get(table_name, []))
     start = chunk_index * parent_var_limit
@@ -69,11 +78,17 @@ def calculate_chunk_variables(config: dict, table_name: str, chunk_index: int) -
     
     return variables[start:end]
 
+def validate_year_range(first_year: int, last_year: int) -> None:
+    if first_year > last_year:
+        raise ValueError("First year must be less than or equal to last year")
+    if first_year < 2000:  # Or whatever earliest valid year is
+        raise ValueError("Census API data not available before 2000")
+
 def download_census_data(
     folder_path: str,
     first_year: int,
     last_year: int,
-    config: dict,
+    config: CensusConfig,
     table: dict
 ) -> None:
     """Download census data for a range of years and save to CSV files."""
@@ -103,6 +118,29 @@ def download_census_data(
                 except Exception as e:
                     logger.error(f"Error saving {year} data to {file_path}: {e}")
 
+def validate_year_range(start_year: int, end_year: int) -> None:
+    if not isinstance(start_year, int) or not isinstance(end_year, int):
+        raise ValueError("Year range must be integers")
+    if start_year > end_year:
+        raise ValueError("First year must be less than or equal to last year")
+    if start_year < 2000:  # Or whatever earliest valid year is
+        raise ValueError("Census API data not available before 2000")
+    
+
+def get_year_range(config: dict) -> tuple:
+    """
+    Get the year range from the configuration.
+    Returns: tuple: The first and last year in the range"""
+    try:
+        start_year = config['constants']['year_range']['start']
+        end_year = config['constants']['year_range']['end']
+        validate_year_range(start_year, end_year)
+    except KeyError as e:
+        logger.error(f"Error getting year range from configuration,
+                      check if year_range exists with start and end values: {e}")
+        raise
+
+
 def main() -> None:
 
     project_path = get_project_path()
@@ -123,8 +161,8 @@ def main() -> None:
         # Download data
         download_census_data(
             folder_path=folder_path,
-            first_year=2016,
-            last_year=2023,
+            first_year=config['constants']['first_year'],
+            last_year=config['constants']['last_year'],
             config=config,
             table=table,
         )
