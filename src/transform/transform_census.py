@@ -153,23 +153,23 @@ def process_and_consolidate_census_files(
                     column_mapping=column_mapping
                 )
 
-def main() -> None:
-    # Load paths from environment
-    project_path = get_project_path()
-    census_raw_folder = os.path.join(project_path, 'data/raw/census')
-
-    config_path = os.path.join(project_path, 'config/census_variables.yml')
-
-    # Load configuration and create column mapping
-    config = load_census_config(config_path)
+def main(project_path=None, census_raw_folder=None, config_path=None, config=None) -> None:
+    if project_path is None:
+        project_path = get_project_path()
+    if census_raw_folder is None:
+        census_raw_folder = os.path.join(project_path, 'data/raw/census')
+    if config_path is None:
+        config_path = os.path.join(project_path, 'config/census_variables.yml')
+    if config is None:
+        config = load_census_config(config_path)
+    
     column_mapping = create_column_mapping(config)
-
-    # Process files
     logger.info(f"Processing census files in {census_raw_folder}")
     process_and_consolidate_census_files(
         raw_folder_path=census_raw_folder,
         column_mapping=column_mapping
     )
-    print("Census data processing complete.")
+
+
 if __name__ == "__main__":
     main()

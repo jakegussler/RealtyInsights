@@ -141,24 +141,17 @@ def get_year_range(config: dict) -> tuple:
         raise
 
 
-def main() -> None:
-
-    project_path = get_project_path()
-    # Load configuration using project path and config file path
-    config_path = os.path.join(
-        project_path,
-        'config/census_variables.yml'
-    )
-    config = load_census_config(config_path)
+def main(project_path=None, config_path=None, config=None) -> None:
+    if project_path is None:
+        project_path = get_project_path()
+    if config_path is None:
+        config_path = os.path.join(project_path, 'config/census_variables.yml')
+    if config is None:
+        config = load_census_config(config_path)
     
-
     for table in config['tables']:
-
-        # Set up folder
         folder_path = os.path.join(project_path, 'data/raw/census', table['name'])
         prepare_and_clean_folder(folder_path)
-        
-        # Download data
         download_census_data(
             folder_path=folder_path,
             first_year=config['constants']['first_year'],
@@ -166,7 +159,6 @@ def main() -> None:
             config=config,
             table=table,
         )
-    
 
 
 if __name__ == "__main__":
