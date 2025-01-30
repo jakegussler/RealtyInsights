@@ -79,6 +79,11 @@ def ingest_all_csv_files_in_folder(folder_path: str, schema: str) -> None:
         if file.endswith(".csv"):
             file_path = f"{folder_path}/{file}"
             table_name = file.split('.')[0].lower()
+                
+            #Prepare the database
+            delete_table(schema="census_raw", table_name="census_data")
+            create_table(df=pd.read_csv(file_path, nrows=1), schema=schema, table_name=table_name)
+
             ingest_csv_to_db(file_path=file_path, schema=schema, table_name=table_name)
 
 
@@ -90,11 +95,6 @@ def ingest_census_data() -> None:
     #Get the file path
     project_path = os.getenv("PROJECT_PATH")
     folder_path = f"{project_path}/data/processed/census"
-    census_data_file_path = f"{folder_path}/census_data.csv"
-
-    #Prepare the database
-    delete_table(schema="census_raw", table_name="census_data")
-    create_table(df=pd.read_csv(census_data_file_path, nrows=1), schema="census_raw", table_name="census_data")
     
     ingest_all_csv_files_in_folder(folder_path=folder_path, schema="census_raw")
 
