@@ -31,7 +31,7 @@ def create_url(config: dict, year: int, table: dict) -> str:
 
 def get_census_as_df(config: dict, year: int, table: dict, geo_level:dict, variables: list) -> pd.DataFrame | None:
     """Retrieve data from the Census API for a specific year."""
-    url = create_url(year, table)
+    url = create_url(config, year, table)
     table_name = table['name']
 
     params = {
@@ -106,7 +106,7 @@ def download_census_data(
                 logger.info(f"Downloading data for {year} chunk {chunk_index+1}/{num_chunks}\n")
                 logger.debug(f"Variables: {variables}")
 
-                file_name = create_file_name(year, chunk_index, geo_level['file_name_segment'], table_name)
+                file_name = create_file_name(config, year, chunk_index, geo_level['file_name_segment'], table_name)
                 file_path = os.path.join(folder_path, file_name)
 
                 try:
@@ -136,8 +136,7 @@ def get_year_range(config: dict) -> tuple:
         end_year = config['constants']['year_range']['end']
         validate_year_range(start_year, end_year)
     except KeyError as e:
-        logger.error(f"Error getting year range from configuration,
-                      check if year_range exists with start and end values: {e}")
+        logger.error(f"Error getting year range from configuration, check if year_range exists with start and end values: {e}")
         raise
 
 
