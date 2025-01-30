@@ -123,8 +123,8 @@ def validate_year_range(start_year: int, end_year: int) -> None:
         raise ValueError("Year range must be integers")
     if start_year > end_year:
         raise ValueError("First year must be less than or equal to last year")
-    if start_year < 2000:  # Or whatever earliest valid year is
-        raise ValueError("Census API data not available before 2000")
+    if start_year < 2009:
+        raise ValueError("Census American Community Survet 5-year API data not available before 2009")
     
 
 def get_year_range(config: dict) -> tuple:
