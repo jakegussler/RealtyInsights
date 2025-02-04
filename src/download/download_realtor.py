@@ -33,18 +33,18 @@ def get_csv(url: str, csv_output_name: str, folder_path: str) -> None:
     logger.info(f"Download start time: {timestamps['start_time']}")
 
     try:
-        create_output_dir(folder_path=folder_path)
+        create_output_dir(folder_path)
         response = get_response(url=url)
         if(response):
             timestamps["download_end_time"] = datetime.datetime.now()
             logger.info(f"Download end time: {timestamps["download_end_time"]}")
             
-            filepath = f"{folder_path}/{csv_output_name}"
+            file_path = f"{folder_path}/{csv_output_name}"
 
-            write_response_to_csv(response=response, filepath=filepath)
+            write_response_to_csv(response, file_path)
             
             timestamps["write_end_time"] = datetime.datetime.now()
-            logger.info(f"Download complete for {csv_output_name}, saved to {filepath}")
+            logger.info(f"Download complete for {csv_output_name}, saved to {file_path}")
             logger.info(f"Time to download and process: {timestamps["write_end_time"] - timestamps["start_time"]}")
 
             
@@ -53,7 +53,7 @@ def get_csv(url: str, csv_output_name: str, folder_path: str) -> None:
 
 
 
-def download_all_realtor_csv_files(folder_path: str) -> None:
+def download_realtor_data(folder_path: str) -> None:
     
     """
     Download the Realtor.com CSV files
@@ -80,7 +80,7 @@ def main() -> None:
     folder_path = "/Users/jakegussler/Projects/RealtyInsights/data/raw/realtor"
 
     #Download the zillow tables
-    download_all_realtor_csv_files(folder_path)
+    download_realtor_data(folder_path)
 
 if __name__ == "__main__":
     main()

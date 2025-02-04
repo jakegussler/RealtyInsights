@@ -5,13 +5,13 @@ from pathlib import Path
 logger = setup_logging()
 
 
-def create_output_dir(folderpath: str) -> None:
+def create_output_dir(folder_path: str) -> None:
     try:
-        if not os.path.exists(folderpath):
-            os.makedirs(folderpath)
-            logger.info(f"Created directory: {folderpath}")
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+            logger.info(f"Created directory: {folder_path}")
     except OSError as e:
-        logger.error(f"Error creating directory {folderpath}: {e}")
+        logger.error(f"Error creating directory {folder_path}: {e}")
         raise
 
 def write_response_to_csv(response, file_path: str) -> None:

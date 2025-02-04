@@ -4,6 +4,7 @@ import datetime
 from dotenv import load_dotenv
 from utils.db_utils import get_engine, delete_table, create_table
 from utils.logger_utils import setup_logging
+from utils.file_utils import get_project_path
 
 
 logger = setup_logging()
@@ -87,20 +88,36 @@ def ingest_all_csv_files_in_folder(folder_path: str, schema: str) -> None:
             ingest_csv_to_db(file_path=file_path, schema=schema, table_name=table_name)
 
 
-def ingest_census_data() -> None:
+def ingest_census_data(folder_path: str=None) -> None:
     """
     Ingest the processed census data into the database
     """
 
-    #Get the file path
-    project_path = os.getenv("PROJECT_PATH")
-    folder_path = f"{project_path}/data/processed/census"
     
-    ingest_all_csv_files_in_folder(folder_path=folder_path, schema="census_raw")
+    if folder_path is None:
+        #Get the file path
+        project_path = get_project_path()
+        folder_path = f"{project_path}/data/processed/census"
+    
+    ingest_all_csv_files_in_folder(folder_path=folder_path, schema="raw_census")
+
+def ingest_realtor_data(folder_path: str=None) -> None:
+    """
+    Ingest the processed realtor data into the database
+    """
+
+    if folder_path is None:
+        #Get the file path
+        project_path = get_project_path()
+        folder_path = f"{project_path}/data/raw/realtor"
+    
+    ingest_all_csv_files_in_folder(folder_path=folder_path, schema="raw_realtor")
+
 
 
 def main():
-    ingest_census_data()
+    logger.info("Ingesting data into the database")
+    #ingest_census_data()
 
 if __name__ == "__main__":
     main()
