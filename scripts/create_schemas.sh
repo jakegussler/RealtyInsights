@@ -17,12 +17,13 @@ export PGPASSWORD="${DB_SUPERUSER_PASSWORD}"
 #Connect to postgres as super user and run commands
 psql -U ${DB_SUPERUSER} -h $DB_HOST -d $DB_NAME -w <<EOF
 
-CREATE SCHEMA IF NOT EXISTS realty_raw;
-CREATE SCHEMA IF NOT EXISTS realty_silver;
-CREATE SCHEMA IF NOT EXISTS realty_gold;
+CREATE SCHEMA IF NOT EXISTS raw_realtor;
+CREATE SCHEMA IF NOT EXISTS raw_census;
+CREATE SCHEMA IF NOT EXISTS stg_realtor;
+CREATE SCHEMA IF NOT EXISTS stg_census;
+CREATE SCHEMA IF NOT EXISTS intermediate;
+CREATE SCHEMA IF NOT EXISTS marts_realty_insights;
 
-CREATE SCHEMA IF NOT EXISTS census_raw;
-CREATE SCHEMA IF NOT EXISTS census_silver;
 
 
 EOF
