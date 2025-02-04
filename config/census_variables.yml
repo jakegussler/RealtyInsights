@@ -3,9 +3,8 @@ constants:
   base_url_template: 'https://api.census.gov/data/{year}/acs/acs5'
   file_name_prefix: 'census_acs5'
   api_var_limit: 50
-  year_range:
-    start: 2016 
-    end: 2023
+  first_year: 2016
+  last_year: 2019
 
 # Default columns that are always included
 default_columns:
@@ -601,13 +600,13 @@ suffixes:
       mapping: estimate
     - code: M
       description: Margin of Error
-      mapping: margin_of_error
+      mapping: moe
 #    - code: EA
 #      description: Estimate Annotation
 #      mapping: estimate_annotation
 #    - code: MA
 #      description: Margin of Error Annotation
-#      mapping: margin_of_error_annotation
+#      mapping: moe_annotation
 
 
 # List of available table types
@@ -628,9 +627,9 @@ geo_levels:
   - name: county
     for_parameter: county
     file_name_segment: county
-  - name: place
-    for_parameter: place
-    file_name_segment: place
+  #- name: place
+  #  for_parameter: place
+  #  file_name_segment: place
   #- name: block groups
   #  for_parameter: block
   #  file_name_segment: block
