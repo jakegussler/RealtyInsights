@@ -82,9 +82,8 @@ def ingest_all_csv_files_in_folder(folder_path: str, schema: str) -> None:
             table_name = file.split('.')[0].lower()
                 
             #Prepare the database
-            delete_table(schema="census_raw", table_name="census_data")
+            delete_table(schema=schema, table_name=table_name)
             create_table(df=pd.read_csv(file_path, nrows=1), schema=schema, table_name=table_name)
-
             ingest_csv_to_db(file_path=file_path, schema=schema, table_name=table_name)
 
 
@@ -117,7 +116,7 @@ def ingest_realtor_data(folder_path: str=None) -> None:
 
 def main():
     logger.info("Ingesting data into the database")
-    #ingest_census_data()
+    ingest_census_data()
 
 if __name__ == "__main__":
     main()
