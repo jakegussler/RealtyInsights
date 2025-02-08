@@ -1,0 +1,7 @@
+value_code,issue_type,short_description
+-666666666,insufficient_sample,Insufficient sample observations or median falls in extreme interval
+-999999999,insufficient_cases,Insufficient sample cases in geographic area
+-888888888,not_available,Estimate not applicable or available
+-222222222,insufficient_margin,Insufficient sample for margin of error
+-333333333,extreme_margin,Margin error computation impossible due to extreme median
+-555555555,controlled_estimate,Estimate controlled to independent population/housing estimate
