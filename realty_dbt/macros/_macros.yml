@@ -1,0 +1,21 @@
+version: 2
+
+macros:
+  - name: log_quality_issues_census
+    description: "Log quality issues for census data"
+    arguments:
+      - name: source_table
+        description: "The source table to log quality issues for"
+        type: string
+      - name: columns
+        description: "The columns to log quality issues for"
+        type: list
+  - name: clean_census_value
+    description: "Clean census value"
+    arguments:
+      - name: col
+        description: "The column to clean"
+        type: string
+      - name: col_type
+        description: "The type of the column"
+        type: string
