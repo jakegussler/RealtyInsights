@@ -1,0 +1,100 @@
+version: 2
+
+models:
+  - name: realtor
+    models:
+      - name: stg_realtor__zip
+        description: "Realtor zip code data"
+        columns:
+          - name: zip
+            description: "Zip code"
+
+          - name: state
+            description: "State"
+
+          - name: county
+            description: ""
+
+  - name: census
+    models:
+      - name: stg_census__data_quality_issues
+        description: "Reference table for Census data quality issues"
+        columns:
+          - name: source
+            description: "Source of the data"
+            tests:
+              - not_null
+
+          - name: source_table
+            description: "Table in the source database where the issue was detected"
+            tests:
+              - not_null
+
+          - name: key_columns
+            description: "Columns that uniquely identify the row with the issue"
+            tests:
+              - not_null
+
+          - name: column_name
+            description: "Name of the column with the issue"
+            tests:
+              - not_null
+
+          - name: issue_type
+            description: "Short identifier for the type of data quality issue"
+            tests:
+              - not_null
+
+          - name: issue_description
+            description: "Brief explanation of the data quality issue"
+            tests:
+              - not_null
+
+          - name: original_value
+            description: "Value that caused the issue"
+
+          - name: cleaned_value
+            description: "Value after cleaning"
+
+          - name: detection_method
+            description: "Method used to detect the issue"
+
+          - name: severity
+            description: "Severity of the issue"
+
+      - name: stg_census__subject_zcta
+        description: "Clean and transform the census_acs5_subject_zcta table"
+        columns:
+          - name: name
+            data_type: text
+            
+          - name: geo_id
+            data_type: text
+
+          - name: "zip code tabulation area"
+            data_type: text
+            tests:
+              - not_null
+
+          - name: year
+            data_type: integer
+            tests:
+              - not_null
+
+          - name: median_household_income_estimate
+            data_type: numeric(18,2)
+
+          - name: median_household_income_moe
+            data_type: numeric(18,2)
+
+          - name: population_below_poverty_level_estimate
+            data_type: numeric(18,2)
+
+          - name: population_below_poverty_level_moe
+            data_type: numeric(18,2)
+
+          - name: population_below_poverty_level_under_18_estimate
+            data_type: integer
+
+          - name: population_below_poverty_level_under_18_moe
+            data_type: integer

@@ -1,0 +1,55 @@
+version: 2
+
+sources:
+  - name: census
+    database: realty_insights  
+    schema: raw_census
+    tables:
+      - name: census_acs5_base_zcta
+        description: Raw data from the Census ACS5 Base ZCTA table.
+
+      - name: census_acs5_base_county
+        description: Raw data from the Census ACS5 Base County table.
+
+      - name: census_acs5_base_us
+        description: Raw data from the Census ACS5 Base US table.
+
+      - name: census_acs5_data_profile_zcta
+        description: Raw data from the Census ACS5 Data Profile ZCTA table.
+
+      - name: census_acs5_data_profile_county
+        description: Raw data from the Census ACS5 Data Profile County table.
+
+      - name: census_acs5_data_profile_us
+        description: Raw data from the Census ACS5 Data Profile US table.
+
+      - name: census_acs5_subject_zcta
+        description: Raw data from the Census ACS5 Subject ZCTA table.
+
+      - name: census_acs5_subject_county
+        description: Raw data from the Census ACS5 Subject County table.
+
+      - name: census_acs5_subject_us
+        description: Raw data from the Census ACS5 Subject US table.
+
+      - name: stg_value_annotations
+        description: Raw data from the Census Value Annotations table.
+
+  - name: realtor
+    database: realty_insights
+    schema: raw_realtor
+    tables:
+      - name: realtor_zip
+        description: Raw data from the Realtor.com Zip table.
+
+      - name: realtor_county
+        description: Raw data from the Realtor.com County table.
+
+      - name: realtor_metro
+        description: Raw data from the Realtor.com Metro table.
+
+      - name: realtor_state
+        description: Raw data from the Realtor.com State table.
+
+      - name: realtor_us
+        description: Raw data from the Realtor.com US table.
