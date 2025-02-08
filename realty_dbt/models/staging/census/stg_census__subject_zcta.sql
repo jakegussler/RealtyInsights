@@ -1,11 +1,23 @@
-{% set census_columns = {
-    'median_household_income_estimate': 'NUMERIC(18,2)',
-    'median_household_income_moe': 'NUMERIC(18,2)',
-    'population_below_poverty_level_estimate': 'NUMERIC(18,2)',
-    'population_below_poverty_level_moe': 'NUMERIC(18,2)',
-    'population_below_poverty_level_under_18_estimate': 'INTEGER',
-    'population_below_poverty_level_under_18_moe': 'INTEGER'
-} %}
+{{
+    config(
+        materialized='view',
+        post_hook="{{log_quality_issues_census(this, this.meta.census_variables.keys() | list)}}",
+        meta={
+            'census_variables': {
+                'median_household_income_estimate': 'NUMERIC(18,2)',
+                'median_household_income_moe': 'NUMERIC(18,2)',
+                'population_below_poverty_level_estimate': 'NUMERIC(18,2)',
+                'population_below_poverty_level_moe': 'NUMERIC(18,2)',
+                'population_below_poverty_level_under_18_estimate': 'INTEGER',
+                'population_below_poverty_level_under_18_moe': 'INTEGER'
+            }
+        }
+    )
+}}
+
+{% set census_variables = this.meta.census_variables %}
+
+
 
 with cleaned_data as (
     SELECT
@@ -13,18 +25,10 @@ with cleaned_data as (
         geo_id::TEXT AS geo_id,
         "zip code tabulation area"::TEXT AS zcta,
         year::INTEGER AS year,
-        {% for col, col_type in census_columns.items() %}
-          {{ clean_census_value(col, col_type) }} AS {{ col }}{% if not loop.last %},{% endif %}
+        {% for col, col_type in census_variables.items() %}
+            {{ clean_census_value(col, col_type) }} AS {{ col }}{% if not loop.last %},{% endif %}
         {% endfor %}
     FROM {{ source('census', 'census_acs5_subject_zcta') }}
 )
 
--- Log quality issues
-{{ log_quality_issues_census(
-    source_table=source('census', 'census_acs5_subject_zcta'),
-    columns=census_columns
-) }}
-
 select * from cleaned_data
-
-
