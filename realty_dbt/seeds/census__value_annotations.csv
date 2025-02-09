@@ -1,4 +1,4 @@
-value_code,issue_type,short_description
+value_code,issue_type,issue_description
 -666666666,insufficient_sample,Insufficient sample observations or median falls in extreme interval
 -999999999,insufficient_cases,Insufficient sample cases in geographic area
 -888888888,not_available,Estimate not applicable or available

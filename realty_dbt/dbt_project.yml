@@ -32,5 +32,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   realty_dbt:
     # Config indicated by + and applies to all files under models/example/
-    example:
+    staging:
       +materialized: view
+      realtor:
+        +schema: stg_realtor
+      census:
+        +schema: stg_census
+      logging:
+        +schema: logging

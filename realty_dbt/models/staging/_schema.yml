@@ -1,25 +1,16 @@
 version: 2
 
 models:
-  - name: realtor
+  - name: logging
     models:
-      - name: stg_realtor__zip
-        description: "Realtor zip code data"
+      - name: log_census_subject_zcta
+        description: "Log Census subject ZCTA data quality issues"
         columns:
-          - name: zip
-            description: "Zip code"
+          - name: issue_id
+            description: "Unique identifier for the data quality issue"
+            tests:
+              - not_null
 
-          - name: state
-            description: "State"
-
-          - name: county
-            description: ""
-
-  - name: census
-    models:
-      - name: stg_census__data_quality_issues
-        description: "Reference table for Census data quality issues"
-        columns:
           - name: source
             description: "Source of the data"
             tests:
@@ -56,12 +47,26 @@ models:
           - name: cleaned_value
             description: "Value after cleaning"
 
-          - name: detection_method
-            description: "Method used to detect the issue"
+          - name: detection_timestamp
+            description: "Timestamp of when the issue was detected"
 
-          - name: severity
-            description: "Severity of the issue"
+          - name: notes
+            description: "Notes about the issue"
 
+
+  - name: realtor
+    models:
+      - name: stg_realtor__zip
+        description: "Realtor zip code data"
+        columns:
+          - name: zip
+            description: "Zip code"
+
+          - name: state
+            description: "State"
+          
+  - name: census
+    models:
       - name: stg_census__subject_zcta
         description: "Clean and transform the census_acs5_subject_zcta table"
         columns:

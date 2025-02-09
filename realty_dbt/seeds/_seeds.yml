@@ -1,0 +1,10 @@
+version: 2
+
+seeds:
+  - name: census__value_annotations
+    schema: stg_census
+    description: "Census value annotations"
+    columns:
+      - name: value_code
+      - name: issue_type
+      - name: issue_description

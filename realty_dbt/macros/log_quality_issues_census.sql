@@ -8,10 +8,12 @@ insert into {{ ref('stg_census__data_quality_issues') }} (
     issue_type,
     issue_description,
     original_value,
-    detection_method,
-    severity
+    cleaned_value,
+    detection_timestamp,
+    notes
 )
 select 
+    {{ dbt_utils.generate_surrogate_key(['source', 'source_table', 'column_name', 'detection_timestamp']) }} as issue_id,
     'census_data' as source,
     '{{ source_table }}' as source_table,
     jsonb_build_object(
@@ -22,6 +24,10 @@ select
     va.issue_type,
     va.issue_description as issue_description,
     col.value::text as original_value,
+    null as cleaned_value,
+    current_timestamp as detection_timestamp,
+    null as notes
+
 from {{ source_table }} src
 cross join lateral (
     values
@@ -30,10 +36,10 @@ cross join lateral (
 {% endfor %}
 ) as col(column_name, value)
 inner join {{ ref('census__value_annotations') }} va
-    on col.value = va.value_code
-where col.value in (
-    select value_code from {{ ref('census__value_annotations') }}
-    where value_code is not null
+    on col.value::text = va.value_code::text
+where col.value::text in (
+    select value_code::text from {{ ref('census__value_annotations') }}
+    where value_code::text is not null
 )
 or col.value is null
 
