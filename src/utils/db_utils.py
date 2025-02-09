@@ -23,10 +23,10 @@ def delete_table(schema: str, table_name: str) -> None:
     try:
         with engine.connect() as connection:
             connection.execute(
-                text('DROP TABLE IF EXISTS "{}"."{}"'.format(schema, table_name))
+                text('DROP TABLE IF EXISTS "{}"."{}" CASCADE'.format(schema, table_name))
             )
             connection.commit()
-            logger.info(f"SQL Command: DROP TABLE IF EXISTS {schema}.{table_name}")
+            logger.info(f"SQL Command: DROP TABLE IF EXISTS {schema}.{table_name} CASCADE")
     except Exception as e:
         logger.error(f"An error occurred while deleting table {table_name}: {str(e)}")
         raise
