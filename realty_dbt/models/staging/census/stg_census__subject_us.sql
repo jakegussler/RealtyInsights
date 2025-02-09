@@ -1,8 +1,6 @@
-{{
-  config(
-    materialized='view',
-  )
-}}
+{{ config(
+    materialized='view'
+) }}
 
 {% set census_variables = {
     'median_household_income_estimate': 'NUMERIC(18,2)',
@@ -17,4 +15,4 @@
     {"source": "us", "alias": "us"}
 ] %}
 
-select * from {{ build_census_view(source('census', 'census_acs5_subject_us'), extra_columns, census_variables) }}
+{{ build_census_staging(source('census', 'census_acs5_subject_us'), extra_columns, census_variables) }}
