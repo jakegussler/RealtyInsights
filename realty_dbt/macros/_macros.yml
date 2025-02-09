@@ -19,3 +19,22 @@ macros:
       - name: col_type
         description: "The type of the column"
         type: string
+  - name: build_census_staging
+    description: "Build census staging"
+    arguments:
+      - name: source
+        description: "The source to build"
+        type: string
+      - name: extra_columns
+        description: "The extra columns to add"
+        type: list
+      - name: census_variables
+        description: "The census variables to add"
+        type: list
+  - name: generate_schema_name
+    description: "Changes the mechanism of how the schema name is generated to not use the profiles.yml schema name"
+    arguments:
+      - name: custom_schema_name
+        description: "The custom schema name"
+        type: string
+
