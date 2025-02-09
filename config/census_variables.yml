@@ -473,7 +473,7 @@ variables:
     
     population_age_5_to_9:
       table: DP05
-      row: "0005"
+      row: "0006"
       description: Population 5 to 9 years old
 
     population_age_10_to_14:
