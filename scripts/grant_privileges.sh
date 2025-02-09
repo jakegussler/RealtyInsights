@@ -23,5 +23,4 @@ GRANT ALL PRIVILEGES ON SCHEMA raw_realtor TO ${DB_DBT_USER};
 GRANT ALL PRIVILEGES ON SCHEMA raw_census TO ${DB_DBT_USER};
 
 
-GRANT ALL PRIVILEGES ON SCHEMA stg_realtor, stg_census, intermediate, marts_realty_insights TO ${DB_DBT_USER};
 
